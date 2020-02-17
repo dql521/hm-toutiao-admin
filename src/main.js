@@ -9,6 +9,13 @@ import 'element-ui/lib/theme-chalk/index.css'
 Vue.config.productionTip = false
 axios.defaults.baseURL = 'http://localhost:3000'
 Vue.prototype.$axios = axios
+Vue.prototype.$fixUrl = function (url) {
+  if (url.startsWith('http')) {
+    return url
+  } else {
+    return axios.defaults.baseURL + url
+  }
+}
 Vue.use(ElementUi)
 Vue.filter('time', function (input) {
   return moment(input).format('YYYY-MM-DD')

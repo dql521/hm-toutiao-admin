@@ -41,7 +41,7 @@ export default {
         this.$message.success('登录成功')
         localStorage.setItem('token', data.token)
         localStorage.setItem('user', JSON.stringify(data.user))
-        this.$router.push('/')
+        this.$router.push('/post-list')
       } else {
         this.$message.error('用户名或密码错误')
       }
