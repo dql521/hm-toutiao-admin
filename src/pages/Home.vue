@@ -2,7 +2,7 @@
   <div class="home">
     <el-container>
     <el-aside width="160px">
-      <div class="logo">黑马头条</div>
+      <div class="logo">豆乐资讯</div>
        <el-menu
       background-color="#545c64"
       text-color="#fff"
