@@ -5,6 +5,10 @@
       <el-breadcrumb-item>文章列表</el-breadcrumb-item>
     </el-breadcrumb>
     <!-- 表格 -->
+<!-- v-loading="loading"
+     v-loading.fullscreen="true"
+     :element-loading-text="msg"
+     element-loading-background="rgba(1, 1, 1, 0.3)" -->
      <el-table
       :data="postList"
       style="width: 100%">
@@ -42,7 +46,7 @@
     </el-table-column>
   </el-table>
   <!-- 分页 -->
-  <div class="block">
+  <div class="paging">
     <el-pagination
       layout="total, sizes, prev, pager, next, jumper"
       background
@@ -57,13 +61,16 @@
   </div>
 </template>
 <script>
+import { getPostList } from '../api/api'
 export default {
   data () {
     return {
       postList: [],
       pageSize: 3,
       pageIndex: 1,
-      total: 0
+      total: 0,
+      loading: false,
+      msg: '数据加载中，请稍后'
     }
   },
   created () {
@@ -71,20 +78,41 @@ export default {
   },
   methods: {
     async getPostList () {
-      const res = await this.$axios.get('/post', {
-        params: {
-          pageSize: this.pageSize,
-          pageIndex: this.pageIndex
-        }
+      // const _this = this
+      // _this.loading = true
+      // const res = await this.$axios.get('/post', {
+      //   params: {
+      //     pageSize: this.pageSize,
+      //     pageIndex: this.pageIndex
+      //   }
+      // })
+      // const params = {
+      //   pageSize: this.pageSize,
+      //   pageIndex: this.pageIndex
+      // }
+      // const res = await this.getRequest('/post', {
+      //   pageSize: this.pageSize,
+      //   pageIndex: this.pageIndex
+      // })
+      const res = await getPostList({
+        pageSize: this.pageSize,
+        pageIndex: this.pageIndex
       })
+      console.log(res.data)
+
       const { statusCode, data, total } = res.data
       if (statusCode === 200) {
         this.postList = data
         this.total = total
+        // setTimeout(function () {
+        //   _this.loading = false
+        // }, 1000)
       }
     },
     handleCurrentChange (val) {
       this.pageIndex = val
+      // console.log(this.pageIndex)
+
       this.getPostList()
     },
     handleSizeChange (val) {
@@ -109,7 +137,7 @@ export default {
 
 <style lang="scss" scoped>
 .post-list {
-  .block{
+  .paging{
     margin: auto;
   }
   .el-table {

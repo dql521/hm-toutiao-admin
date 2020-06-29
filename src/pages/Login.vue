@@ -7,6 +7,9 @@
   <el-form-item label="密码：">
     <el-input v-model="form.password" type="password" placeholder="请输入密码"></el-input>
   </el-form-item>
+  <el-form-item label="验证：">
+    <div ref="captcha" id="captcha"></div>
+  </el-form-item>
   <el-form-item>
     <el-button type="primary" @click="login">登录</el-button>
     <el-button @click="reset">重置</el-button>
@@ -16,7 +19,12 @@
 </template>
 
 <script>
+import '../utils/slideBlock.js'
+import { login } from '../api/api'
 export default {
+  props: {
+    msg: String
+  },
   data () {
     return {
       form: {
@@ -24,6 +32,9 @@ export default {
         password: ''
       }
     }
+  },
+  mounted () {
+    this.getCaptcha()
   },
   methods: {
     async login () {
@@ -35,7 +46,11 @@ export default {
         this.$message.error('密码不能为空')
         return
       }
-      const res = await this.$axios.post('/login', this.form)
+      console.log(this.form)
+
+      // const res = await this.$axios.post('/login', this.form)
+      // const res = await this.postRequest('/login', this.form)
+      const res = await login(this.form)
       const { statusCode, data } = res.data
       if (statusCode === 200) {
         this.$message.success('登录成功')
@@ -49,12 +64,31 @@ export default {
     reset () {
       this.form.username = ''
       this.form.password = ''
+    },
+    getCaptcha () {
+      window.Jigsaw.init({
+        el: this.$refs.captcha,
+        onSuccess: this.onSuccess,
+        onFail: this.onFail,
+        onRefresh: this.cleanMsg
+      })
+    },
+    onSuccess () {
+      console.log('成功')
+      // 后台登录认证
+    },
+    onFail () {
+      console.log('失败')
+    },
+    cleanMsg () {
+      console.log('刷新')
     }
   }
 }
 </script>
 
 <style lang="scss" scoped>
+@import "../utils/slideBlock.css";
 #app{
   background: #ccc;
   .el-form{

@@ -20,7 +20,7 @@
     <el-form-item label="封面">
       <el-upload
       list-type="picture-card"
-      :action="$axios.defaults.baseURL + '/upload'"
+      :action="'http://localhost:3000' + '/upload'"
       :headers="headers"
       :on-success="handleSuccess"
       :file-list="fileList"
@@ -73,7 +73,8 @@ export default {
   },
   methods: {
     async getcategoryList () {
-      const res = await this.$axios.get('/category')
+      // const res = await this.$axios.get('/category')
+      const res = await this.getRequest('/category')
       const { statusCode, data } = res.data
       if (statusCode === 200) {
         this.categoryList = data.filter(item => item.id !== 999)
@@ -94,7 +95,12 @@ export default {
       } else {
         url = '/post'
       }
-      const res = await this.$axios.post(url, data, {
+      // const res = await this.$axios.post(url, data, {
+      //   headers: {
+      //     Authorization: localStorage.getItem('token')
+      //   }
+      // })
+      const res = await this.postRequest(url, data, {
         headers: {
           Authorization: localStorage.getItem('token')
         }
@@ -111,12 +117,13 @@ export default {
       if (statusCode === 200) {
         this.form.cover.push({
           id: data.id,
-          url: this.$axios.defaults.baseURL + data.url
+          url: 'http://localhost:3000' + data.url
         })
       }
     },
     async getPostDetail (id) {
-      const res = await this.$axios.get(`/post/${id}`)
+      // const res = await this.$axios.get(`/post/${id}`)
+      const res = await this.getRequest(`/post/${id}`)
       const { statusCode, data } = res.data
       if (statusCode === 200) {
         this.form = data

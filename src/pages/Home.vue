@@ -1,14 +1,16 @@
 <template>
   <div class="home">
     <el-container>
-    <el-aside width="160px">
-      <div class="logo">黑马头条</div>
-       <el-menu
-      background-color="#545c64"
+    <!-- <el-collapse-transition> -->
+    <el-menu
+      :collapse-transition="true"
+      :collapse="isCollapse"
+      background-color="rgb(144, 169, 248)"
       text-color="#fff"
-      active-text-color="#ffd04b"
+      active-text-color="#fff"
       router
       :default-active="$route.path">
+      <div class="logo">ad-vesy</div>
       <el-menu-item index="/post-list">
         <i class="el-icon-menu"></i>
         <span slot="title">文章列表</span>
@@ -18,12 +20,16 @@
         <span slot="title">发布文章</span>
       </el-menu-item>
     </el-menu>
-    </el-aside>
+    <!-- </el-collapse-transition> -->
     <el-container>
     <el-header>
-      <img :src="$axios.defaults.baseURL + user.head_img" alt="">
-      <div class="nickname">{{user.nickname}}</div>
-      <div class="logout" @click="logout">退出</div>
+      <i :class="isCollapse ? 'el-icon-s-fold' : 'el-icon-s-unfold'"
+         @click="toggleCollapse"></i>
+      <div class="lyout">
+        <img :src="'http://localhost:3000' + user.head_img" alt="">
+        <div class="nickname">{{user.nickname}}</div>
+        <div class="logout" @click="logout">退出</div>
+      </div>
     </el-header>
     <el-main>
       <router-view></router-view>
@@ -37,7 +43,8 @@
 export default {
   data () {
     return {
-      user: JSON.parse(localStorage.getItem('user'))
+      user: JSON.parse(localStorage.getItem('user')),
+      isCollapse: true
     }
   },
   methods: {
@@ -57,6 +64,10 @@ export default {
           message: '已取消操作。'
         })
       }
+    },
+    toggleCollapse () {
+      console.log(123456789)
+      this.isCollapse = !this.isCollapse
     }
   }
 }
@@ -71,44 +82,64 @@ export default {
     height: 100%;
   }
   .el-header {
-    background-color: #666;
-    color: #ccc;
+    background-color: #fff;
+    color: #111;
     text-align: center;
     line-height: 60px;
     display: flex;
     align-items: center;
-    justify-content: flex-end;
+    // justify-content: flex-end;
+    justify-content: space-between;
     font-size: 14px;
-    img{
+    .el-icon-s-fold,
+    .el-icon-s-unfold{
+      color: rgb(144, 169, 248);
+      height: 60px;
+      line-height: 60px;
+      width: 60px;
+      text-align: start;
+    }
+    .lyout{
+      height: 60px;
+      width: 150px;
+      display: flex;
+    // align-items: center;
+    // justify-content: center;
+      img{
       width: 40px;
       height: 40px;
       border-radius: 50%;
+      margin-top: 10px;
     }
     .nickname{
       margin: 0 10px;
     }
     .logout{
-      color: #fff;
+      color: #888;
       cursor: pointer;
     }
-  }
-
-  .el-aside {
-    background-color: #545c64;
-    color: #fff;
-    text-align: center;
-    .logo{
-      background: #333;
-      height: 60px;
-      line-height: 60px;
     }
   }
 
+  // .el-aside {
+  //   background-color: #545c64;
+  //   color: #fff;
+  //   text-align: center;
+  // }
+    .logo{
+      background: #fff;
+      height: 60px;
+      line-height: 60px;
+      color: rgb(144, 169, 248);
+      text-align: center;
+    }
   .el-main {
     background-color: #E9EEF3;
     color: #333;
   }
-
+.el-menu{
+  border: none;
+}
   body > .el-container {
     margin-bottom: 40px;
   }
