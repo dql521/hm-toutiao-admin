@@ -1,5 +1,5 @@
 <template>
-<div id="home">
+<div id="index">
     <el-container>
       <el-aside width="auto">
         <div class="logo"></div>

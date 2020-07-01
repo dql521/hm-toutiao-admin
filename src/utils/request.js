@@ -1,13 +1,13 @@
 import axios from 'axios'
 import vue from 'vue'
 import router from '../router/index'
-import { baseURL } from '../config/env'
+// import { baseURL } from '../config/env'
 import { Loading, Message } from 'element-ui'
 
 const service = axios.create({
   // process.env.NODE_ENV === 'development' 来判断是否开发环境
   // easy-mock服务挂了，暂时不使用了
-  baseURL: baseURL,
+  // baseURL: baseURL,
   timeout: 10000
   // headers: {
   //   post: {

@@ -4,9 +4,9 @@ import router from './router'
 import { getRequest, postRequest } from '../src/utils/request'
 // import axios from 'axios'
 import moment from 'moment'
-
 import ElementUi from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
+import 'lib-flexible'
 
 Vue.config.productionTip = false
 

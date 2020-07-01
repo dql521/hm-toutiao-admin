@@ -14,6 +14,19 @@ module.exports = {
   devServer: {
     hot: true, // 热启动
     open: true // 打开浏览器
+  },
+  css: {
+    loaderOptions: {
+      postcss: {
+        plugins: [
+          require('postcss-px2rem')({
+            remUnit: 130
+            // rootValue: 86,
+            // mediaQuery: true
+          })
+        ]
+      }
+    }
   }
 
   // 入口文件配置

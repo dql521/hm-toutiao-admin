@@ -46,7 +46,6 @@ export default {
         this.$message.error('密码不能为空')
         return
       }
-      console.log(this.form)
 
       // const res = await this.$axios.post('/login', this.form)
       // const res = await this.postRequest('/login', this.form)
@@ -56,7 +55,7 @@ export default {
         this.$message.success('登录成功')
         localStorage.setItem('token', data.token)
         localStorage.setItem('user', JSON.stringify(data.user))
-        this.$router.push('/post-list')
+        this.$router.push('/index')
       } else {
         this.$message.error('用户名或密码错误')
       }
