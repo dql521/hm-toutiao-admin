@@ -125,7 +125,7 @@ export default {
     },
     edit (id) {
       this.$router.push({
-        name: 'post-publish',
+        name: 'postpublish',
         params: {
           id: id
         }

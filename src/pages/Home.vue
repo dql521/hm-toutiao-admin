@@ -1,39 +1,52 @@
 <template>
   <div class="home">
     <el-container>
-      <el-header>
-        <div class="logo">advesy</div>
+      <el-header  height="auto">
+        <div class="logo">
+          <img src="../assets/logo@2x.png" alt />
+        </div>
+        <div class="collapse" @click="toggleCollapse">
+          <i :class="isCollapse ? 'el-icon-s-fold' : 'el-icon-s-unfold'"></i>
+        </div>
         <div class="lyout">
-          <img :src="'http://localhost:3000' + user.head_img" alt />
-          <div class="nickname">{{user.nickname}}</div>
           <div class="logout" @click="logout">退出</div>
+          <div class="nickname">{{userNickName}}</div>
+          <img src="../assets/img.png" alt />
         </div>
       </el-header>
       <el-container>
-        <el-aside width="160px">
+        <el-aside width="auto">
           <el-menu
-            background-color="#4EA0FF"
+            :class="isCollapse ? 'sm' : 'big'"
+            :collapse="isCollapse"
+            :collapse-transition="false"
+            background-color="#03275E"
             text-color="#fff"
-            active-text-color="#FFEE44"
+            active-text-color="#fff"
             router
             :default-active="$route.path"
           >
             <el-menu-item index="/index">
-              <i class="el-icon-menu"></i>
+              <i class="el-icon-s-home"></i>
               <span slot="title">首页</span>
             </el-menu-item>
-            <el-menu-item index="/ad-publish">
-              <i class="el-icon-setting"></i>
-              <span slot="title">广告发布</span>
-            </el-menu-item>
-            <el-menu-item index="/post-list">
-              <i class="el-icon-setting"></i>
-              <span slot="title">内容管理</span>
-            </el-menu-item>
-            <el-menu-item index="/gallery">
-              <i class="el-icon-setting"></i>
-              <span slot="title">图片库</span>
-            </el-menu-item>
+            <el-submenu v-for="item in menus" :key="item.id" v-if="item.children" :index="item.id">
+              <template slot="title">
+                <i :class="item.attributes.icon"></i>
+                <span>{{ item.text }}</span>
+              </template>
+              <el-menu-item
+                v-for="children in item.children"
+                :key="children.id"
+                :index="children.attributes.url"
+              >{{ children.text }}</el-menu-item>
+            </el-submenu>
+            <el-menu-item
+              v-for="item in menus"
+              :key="item.id"
+              v-if="!item.children"
+              :index="item.attributes.url"
+            >{{ item.text }}</el-menu-item>
           </el-menu>
         </el-aside>
         <el-main>
@@ -45,71 +58,96 @@
 </template>
 
 <script>
+import { getUserMenu } from "../api/api";
 export default {
-  data () {
+  data() {
     return {
-      user: JSON.parse(localStorage.getItem('user'))
-    }
+      userNickName: '',
+      menus: [],
+      isCollapse: false
+    };
+  },
+  created() {
+    this.getUserInfo();
   },
   methods: {
-    async logout () {
+    async getUserInfo() {
+      const res = await getUserMenu();
+      // console.log(res)
+      const { code, data } = res.data;
+      if (code === 200) {
+        this.menus = data.menus;
+        this.userNickName = data.userNickName
+        console.log(res.data);
+      }
+    },
+    async logout() {
       try {
-        await this.$confirm('您确定退出管理系统吗？', '提示', {
-          type: 'warning'
-        })
+        await this.$confirm("您确定退出管理系统吗？", "提示", {
+          type: "warning"
+        });
         this.$message({
-          type: 'success',
-          message: '退出成功!'
-        })
-        localStorage.removeItem('token')
-        localStorage.removeItem('user')
-        this.$router.push('/login')
+          type: "success",
+          message: "退出成功!"
+        });
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+        this.$router.push("/login");
       } catch {
         this.$message({
-          type: 'info',
-          message: '已取消操作。'
-        })
+          type: "info",
+          message: "已取消操作。"
+        });
       }
+    },
+    toggleCollapse () {
+      this.isCollapse = !this.isCollapse
+      console.log(this.isCollapse);
+      
     }
-    // toggleCollapse () {
-    //   console.log(123456789)
-    //   this.isCollapse = !this.isCollapse
-    // }
   }
-}
+};
 </script>
 
 <style lang="scss" scoped>
 .el-header {
-  background-color: #fff;
-  color: #333;
+  background-color: #03275e;
+  color: #fff;
   text-align: center;
-  height: 60px;
-  line-height: 60px;
   display: flex;
   // align-items: center;
   // justify-content: flex-end;
-  justify-content: space-between;
+  // justify-content: space-between;
   font-size: 14px;
-  padding: 0;
+  padding: 10px 0;
   .logo {
-    text-align: center;
-    width: 160px;
-    height: 60px;
-    line-height: 60px;
+    width: 200px;
+    padding-left: 10px;
+    img {
+      width: 166px;
+      height: 40px;
+      margin-top: 20px;
+    }
+  }
+  .collapse{
+    font-size: 24px;
+    text-align: left;
+    margin-top: 20px;
+    flex: 1;
   }
   .lyout {
-    height: 60px;
-    width: 200px;
+    width: auto;
     display: flex;
+    margin-top: 20px;
+    margin-right: 20px;
     img {
-      width: 40px;
-      height: 40px;
+      width: 20px;
+      height: 20px;
       border-radius: 50%;
-      margin-top: 10px;
+      vertical-align: middle;
     }
     .nickname {
-      margin: 0 10px;
+      margin: 0 20px;
     }
     .logout {
       color: #888;
@@ -119,14 +157,37 @@ export default {
 }
 
 .el-aside {
-  background-color: #4ea0ff;
+  background-color: #03275e;
   color: #333;
   // text-align: center;
   // line-height: 200px;
   padding-top: 20px;
-  &.el-menu{
-    border: none;
+  .el-menu--collapse{
+    width: 100%;
   }
+  .el-menu {
+    border: none;
+    font-size: 24px;
+    .el-menu-item i,
+    .el-submenu__title i,
+    .el-menu-item span,
+    .el-submenu__title span{
+      font-size: 18px;
+      color: #fff;
+    }
+    .el-submenu__title i {
+      margin-right: 5px;
+    }
+  }
+  .sm{
+    width: 70px;
+  }
+  .big{
+    width: 200px;
+  }
+  .el-menu-item.is-active {
+  background: #3374F3 !important;
+}
 }
 
 .el-main {
@@ -159,6 +220,7 @@ export default {
     height: 100%;
   }
 }
+
 //   .el-header {
 //     background-color: #fff;
 //     color: #111;
@@ -230,5 +292,5 @@ export default {
 //   .el-container:nth-child(7) .el-aside {
 //     line-height: 320px;
 //   }
-// }
+//
 </style>

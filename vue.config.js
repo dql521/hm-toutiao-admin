@@ -13,21 +13,36 @@ console.log(process.env.VUE_APP_HOST)
 module.exports = {
   devServer: {
     hot: true, // 热启动
-    open: true // 打开浏览器
+    open: true, // 打开浏览器
+    // port: 8888,
+    proxy: { // 开发环境代理配置
+      '/api': { // 匹配 /dev-api 开头的请求，
+        // 目标服务器地址
+        target: 'http://192.168.88.186/advesy',
+        changeOrigin: true, // 开启代理服务器，上线时关闭代理
+        pathRewrite: {
+          //  会将 /dev-api 替换为 '',也就是 /dev-api 会移除，
+          // 如 /dev-api/db.json 代理到 https://localhost:8080/db.json
+          '^/api': ''
+        }
+      }
+    }
   },
   css: {
     loaderOptions: {
       postcss: {
         plugins: [
           require('postcss-px2rem')({
-            remUnit: 130
-            // rootValue: 86,
+            remUnit: 192
+            // rootValue: 192
             // mediaQuery: true
           })
         ]
       }
     }
-  }
+  },
+  lintOnSave: false, // 关闭eslint校验
+  productionSourceMap: false,
 
   // 入口文件配置
   // entry: {
