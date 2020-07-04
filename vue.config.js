@@ -42,7 +42,7 @@ module.exports = {
     }
   },
   lintOnSave: false, // 关闭eslint校验
-  productionSourceMap: false,
+  productionSourceMap: false
 
   // 入口文件配置
   // entry: {

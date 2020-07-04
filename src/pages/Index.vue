@@ -63,63 +63,59 @@
 </template>
 
 <script>
-import { getCountDate } from "../api/api";
-import adItem from "../conpments/adItem";
+import { getCountDate } from '../api/api'
 // import aurl from "@/assets/a.png";
 // import burl from "@/assets/b.png";
 // import curl from "@/assets/c.png";
 export default {
-  components: {
-    adItem
-  },
-  data() {
+  data () {
     return {
       ADdata: [],
-          total: {
-            current: 0,
-            last: 153,
-            rate: 8,
-          },
-          published: {
-            current: 0,
-            last: 277,
-            rate: 4,
-          },
-          publishing: {
-            current: 0,
-            last: 96,
-            rate: 5,
-          },
-          topublish: {
-            current: 0,
-            last: 277,
-            rate: 4,
-          },
+      total: {
+        current: 0,
+        last: 153,
+        rate: 8
+      },
+      published: {
+        current: 0,
+        last: 277,
+        rate: 4
+      },
+      publishing: {
+        current: 0,
+        last: 96,
+        rate: 5
+      },
+      topublish: {
+        current: 0,
+        last: 277,
+        rate: 4
+      },
       bottomImgDatas: [
-        { img: require("@/assets/a.png"), id: 0, path: "/adpublish" },
-        { img: require("@/assets/b.png"), id: 1, path: "/postlist" },
-        { img: require("@/assets/c.png"), id: 2, path: "/gallery" }
+        { img: require('@/assets/a.png'), id: 0, path: '/adpublish' },
+        { img: require('@/assets/b.png'), id: 1, path: '/postlist' },
+        { img: require('@/assets/c.png'), id: 2, path: '/gallery' }
       ]
-    };
+    }
   },
-  created() {
-    this.getCountDates();
+  created () {
+    this.getCountDates()
   },
-  mounted() {},
+  mounted () {},
   methods: {
-    jump(i) {
-      console.log("点击了第" + i + "张图片");
+    jump (i) {
+      console.log('点击了第' + i + '张图片')
     },
-    async getCountDates() {
-      const res = await getCountDate();
-      const { code, data } = res.data;
+    async getCountDates () {
+      const res = await getCountDate()
+      const { code, data } = res.data
       if (code === 200) {
-        this.ADdata = data;
-        console.log(this.ADdata);
+        this.ADdata = data
+        console.log(this.ADdata)
       }
     }
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>

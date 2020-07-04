@@ -19,13 +19,13 @@ const router = new VueRouter({
       component: Home,
       name: 'home',
       children: [
-        { path: '/postlist', component: postList, name: 'postlist', meta: {title: '线上统一广告—内容管理'} },
-        { path: '/adpublish', component: adPublish, name: 'adpublish', meta: {title: '线上统一广告—广告发布'} },
-        { path: '/index', component: Index, name: 'index', meta: {title: '线上统一广告—首页'} },
-        { path: '/gallery', component: Gallery, name: 'gallery', meta: {title: '线上统一广告—资源库'} }
+        { path: '/postlist', component: postList, name: 'postlist', meta: { title: '线上统一广告—内容管理' } },
+        { path: '/adpublish', component: adPublish, name: 'adpublish', meta: { title: '线上统一广告—广告发布' } },
+        { path: '/index', component: Index, name: 'index', meta: { title: '线上统一广告—首页' } },
+        { path: '/gallery', component: Gallery, name: 'gallery', meta: { title: '线上统一广告—资源库' } }
       ]
     },
-    { path: '/login', component: Login, name: 'login', meta: {title: '线上统一广告—登录'} }
+    { path: '/login', component: Login, name: 'login', meta: { title: '线上统一广告—登录' } }
   ]
 })
 

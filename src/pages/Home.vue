@@ -42,9 +42,9 @@
               >{{ children.text }}</el-menu-item>
             </el-submenu>
             <el-menu-item
+              v-if="!item.children"
               v-for="item in menus"
               :key="item.id"
-              v-if="!item.children"
               :index="item.attributes.url"
             >{{ item.text }}</el-menu-item>
           </el-menu>
@@ -58,55 +58,54 @@
 </template>
 
 <script>
-import { getUserMenu } from "../api/api";
+import { getUserMenu } from '../api/api'
 export default {
-  data() {
+  data () {
     return {
       userNickName: '',
       menus: [],
       isCollapse: false
-    };
+    }
   },
-  created() {
-    this.getUserInfo();
+  created () {
+    this.getUserInfo()
   },
   methods: {
-    async getUserInfo() {
-      const res = await getUserMenu();
+    async getUserInfo () {
+      const res = await getUserMenu()
       // console.log(res)
-      const { code, data } = res.data;
+      const { code, data } = res.data
       if (code === 200) {
-        this.menus = data.menus;
+        this.menus = data.menus
         this.userNickName = data.userNickName
-        console.log(res.data);
+        console.log(res.data)
       }
     },
-    async logout() {
+    async logout () {
       try {
-        await this.$confirm("您确定退出管理系统吗？", "提示", {
-          type: "warning"
-        });
+        await this.$confirm('您确定退出管理系统吗？', '提示', {
+          type: 'warning'
+        })
         this.$message({
-          type: "success",
-          message: "退出成功!"
-        });
-        localStorage.removeItem("token");
-        localStorage.removeItem("user");
-        this.$router.push("/login");
+          type: 'success',
+          message: '退出成功!'
+        })
+        localStorage.removeItem('token')
+        localStorage.removeItem('user')
+        this.$router.push('/login')
       } catch {
         this.$message({
-          type: "info",
-          message: "已取消操作。"
-        });
+          type: 'info',
+          message: '已取消操作。'
+        })
       }
     },
     toggleCollapse () {
       this.isCollapse = !this.isCollapse
-      console.log(this.isCollapse);
-      
+      console.log(this.isCollapse)
     }
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>

@@ -1,6 +1,6 @@
 import axios from 'axios'
 // import vue from 'vue'
-import router from '../router/index'
+// import router from '../router/index'
 // import { baseURL } from '../config/env'
 import { Message } from 'element-ui'
 

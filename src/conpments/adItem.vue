@@ -8,7 +8,7 @@
          <h2 >总广告数</h2>
          <div class="adnum">153</div>
          <div class="bottom">
-         <p >上周 6</p> 
+         <p >上周 6</p>
          <p style=" margin-left: 40px;">同比 15%</p></div>
      </div>
     <div class="vertrLine">
@@ -23,18 +23,18 @@ import onShelves from '../assets/onShelves.png'
 import shelves from '../assets/shelves.png'
 import didShelves from '../assets/didShelves.png'
 export default {
-     name:'ad-item',
-     props:['img'],
-    data () {
-        return {
-            dateIcon: [
-                { icons: allAd},
-                { icons: onShelves},
-                {icons: shelves},
-                {icons: didShelves}
-            ],
-        }
+  name: 'ad-item',
+  props: ['img'],
+  data () {
+    return {
+      dateIcon: [
+        { icons: allAd },
+        { icons: onShelves },
+        { icons: shelves },
+        { icons: didShelves }
+      ]
     }
+  }
 }
 </script>
 <style lang="scss" scoped>
@@ -54,7 +54,7 @@ export default {
      display: flex;
      flex-direction: row;
      align-items:center;
-  
+
 }
 }
 .rightItem{
@@ -64,7 +64,7 @@ export default {
     font-size: 40px;
     color: #222222;
     font-weight: Bold;
-  
+
     }
 // .vertrLine{
 //     // margin-left: 24.9%;
@@ -77,7 +77,7 @@ h2{
   font-size: 16px;
   color: #222222;
   font-weight: Regular;
-  
+
 }
 p{
     color: #8F99AB;
