@@ -13,15 +13,15 @@
       :data="postList"
       style="width: 100%">
     <el-table-column
-      label="序号"
-      width="50"
+      label="名称"
+      width="223"
       type="index"
       :index="indexMethod">
     </el-table-column>
     <el-table-column
       prop="title"
-      label="标题"
-      width="240">
+      label="位置"
+      width="265">
     </el-table-column>
     <el-table-column label="创建时间" width="100">
       <template v-slot="{row}">{{row.create_date | time}}</template>
@@ -137,6 +137,8 @@ export default {
 
 <style lang="scss" scoped>
 .post-list {
+  padding: 24px;
+  background: #fff;
   .paging{
     margin: auto;
   }

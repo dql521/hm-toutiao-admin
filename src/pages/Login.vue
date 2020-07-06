@@ -1,7 +1,7 @@
 <template>
   <div class="login">
     <div class="setion_box">
-      <img src="../assets/bj_left@2x.png" class="bj_left">
+      <img src="../assets/img/bj_left.png" class="bj_left">
       <el-form ref="form" :model="form" label-width="50px">
         <el-form-item>
           <div class="lg_title">线上统一广告登录</div>
@@ -10,7 +10,7 @@
           <el-input
           v-model="form.userName"
           placeholder="用户名">
-          <i slot="prefix" class="el-input__icon el-icon-s-custom"></i>
+          <i slot="prefix" class="el-icon-User"></i>
           </el-input>
         </el-form-item>
         <el-form-item>
@@ -18,7 +18,7 @@
           v-model="form.password"
           type="password"
           placeholder="密码">
-          <i slot="prefix" class="iconmima"></i>
+          <i slot="prefix" class="el-icon-Pwd"></i>
           </el-input>
         </el-form-item>
         <!-- <el-form-item label="验证：">
@@ -30,7 +30,7 @@
         </el-form-item>
         <el-form-item>
           <el-link type="primary" disabled class="go_logon">没有账号去注册
-            <i class="el-icon-view el-icon-right"></i>
+            <i class="el-icon-rightArrow"></i>
           </el-link>
         </el-form-item>
       </el-form>
@@ -118,7 +118,7 @@ export default {
 
 .login {
   height: 100%;
-  background: url("../assets/bj2@2x.png") no-repeat;
+  background: url("../assets/img/bj2.png") no-repeat;
   background-size: 100% 100%;
   display: flex;
   justify-content: center;
@@ -168,4 +168,24 @@ export default {
   }
 }
 
+// 自定义图标
+.el-icon-User{
+    background: url("../assets/img/User.png") center no-repeat;
+    background-size: cover;
+}
+.el-icon-Pwd{
+    background: url("../assets/img/Pwd.png") center no-repeat;
+    background-size: cover;
+}
+.el-icon-rightArrow{
+    background: url("../assets/img/rightArrow.png") center no-repeat;
+    background-size: cover;
+}
+.el-icon-User:before,
+.el-icon-Pwd:before,
+.el-icon-rightArrow:before{
+    content: "\66ff";
+    font-size: 16px;
+    visibility: hidden;
+}
 </style>

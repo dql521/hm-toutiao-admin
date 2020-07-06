@@ -4,7 +4,7 @@
     <div class="myAdData">
       <div class="count_item">
         <div class="item">
-          <img src="../assets/allAd.png" />
+          <img src="../assets/img/AdvertisementsCount.png" />
           <div class="item_data">
             <p>总广告数</p>
             <h1>{{total.current}}</h1>
@@ -16,7 +16,7 @@
       </div>
       <div class="count_item">
         <div class="item">
-          <img src="../assets/onShelves.png" />
+          <img src="../assets/img/NotOnline.png" />
           <div class="item_data">
             <p>待上线数量</p>
            <h1>{{published.current}}</h1>
@@ -28,7 +28,7 @@
       </div>
       <div class="count_item">
         <div class="item">
-          <img src="../assets/shelves.png" />
+          <img src="../assets/img/On-Line.png" />
           <div class="item_data">
             <p>上架中数量</p>
             <h1>{{publishing.current}}</h1>
@@ -40,7 +40,7 @@
       </div>
       <div class="count_item">
         <div class="item">
-          <img src="../assets/didShelves.png" />
+          <img src="../assets/img/HaveDrop.png" />
           <div class="item_data">
             <p>已下架数量</p>
             <h1>{{topublish.current}}</h1>
@@ -51,10 +51,10 @@
         </div>
       </div>
     </div>
-    <div class="bottom">
+    <div class="shortcut_menu">
       <h1>快捷操作</h1>
-      <div class="bottomBtn">
-        <router-link v-for="item in bottomImgDatas" :key="item.id" :to="{path: item.path}">
+      <div class="menu_btn">
+        <router-link v-for="item in shortcutMenuDatas" :key="item.id" :to="{path: item.path}">
           <img :src="item.img" />
         </router-link>
       </div>
@@ -64,9 +64,6 @@
 
 <script>
 import { getCountDate } from '../api/api'
-// import aurl from "@/assets/a.png";
-// import burl from "@/assets/b.png";
-// import curl from "@/assets/c.png";
 export default {
   data () {
     return {
@@ -91,10 +88,16 @@ export default {
         last: 277,
         rate: 4
       },
-      bottomImgDatas: [
-        { img: require('@/assets/a.png'), id: 0, path: '/adpublish' },
-        { img: require('@/assets/b.png'), id: 1, path: '/postlist' },
-        { img: require('@/assets/c.png'), id: 2, path: '/gallery' }
+      shortcutMenuDatas: [
+        { img: require('@/assets/img/myPublish.png'), id: 0, path: '/adpublish' },
+        { img: require('@/assets/img/LetMeSee.png'), id: 1, path: '/postlist' },
+        { img: require('@/assets/img/MyImage.png'), id: 2, path: '/gallery' }
+      ],
+      fixedInfo: [
+        { icon: require('@/assets/img/AdvertisementsCount.png'), title: '总广告数' },
+        { icon: require('@/assets/img/NotOnline.png'), title: '待上线数量' },
+        { icon: require('@/assets/img/On-Line.png'), title: '上架中数量' },
+        { icon: require('@/assets/img/HaveDrop.png'), title: '已下架数量' }
       ]
     }
   },
@@ -103,15 +106,19 @@ export default {
   },
   mounted () {},
   methods: {
-    jump (i) {
-      console.log('点击了第' + i + '张图片')
-    },
     async getCountDates () {
       const res = await getCountDate()
       const { code, data } = res.data
       if (code === 200) {
-        this.ADdata = data
-        console.log(this.ADdata)
+        data.forEach(item => {
+          // item[icon] = require('@/assets/img/AdvertisementsCount.png')
+          console.log(item)
+        })
+        // index_count_data_total.icon = require('@/assets/img/AdvertisementsCount.png')
+        // index_count_data_total.title = '总广告数'
+        // console.log(index_count_data_total)
+
+        // {index_count_data_total, index_count_data_published,index_count_data_publishing,index_count_data_topublish}
       }
     }
   }
@@ -187,8 +194,8 @@ export default {
   }
 }
 
-.bottom {
-  .bottomBtn {
+.shortcut_menu {
+  .menu_btn {
     display: flex;
     flex-direction: row;
     justify-content: space-between;

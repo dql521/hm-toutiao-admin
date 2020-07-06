@@ -3,7 +3,7 @@
     <el-container>
       <el-header  height="auto">
         <div class="logo">
-          <img src="../assets/logo@2x.png" alt />
+          <img src="../assets/img/logo.png" alt />
         </div>
         <div class="collapse" @click="toggleCollapse">
           <i :class="isCollapse ? 'el-icon-s-fold' : 'el-icon-s-unfold'"></i>
@@ -11,7 +11,7 @@
         <div class="lyout">
           <div class="logout" @click="logout">退出</div>
           <div class="nickname">{{userNickName}}</div>
-          <img src="../assets/img.png" alt />
+          <img src="../assets/img/user_ps.png" alt />
         </div>
       </el-header>
       <el-container>
@@ -27,7 +27,7 @@
             :default-active="$route.path"
           >
             <el-menu-item index="/index">
-              <i class="el-icon-s-home"></i>
+              <i class="el-icon-home"></i>
               <span slot="title">首页</span>
             </el-menu-item>
             <el-submenu v-for="item in menus" :key="item.id" v-if="item.children" :index="item.id">
@@ -45,11 +45,11 @@
               v-if="!item.children"
               v-for="item in menus"
               :key="item.id"
-              :index="item.attributes.url"
-            >{{ item.text }}</el-menu-item>
+              :index="item.attributes.url">
+            {{ item.text }}</el-menu-item>
           </el-menu>
         </el-aside>
-        <el-main>
+        <el-main style="text-align: start;">
           <router-view></router-view>
         </el-main>
       </el-container>
@@ -78,7 +78,7 @@ export default {
       if (code === 200) {
         this.menus = data.menus
         this.userNickName = data.userNickName
-        console.log(res.data)
+        // console.log(res.data)
       }
     },
     async logout () {
@@ -154,13 +154,16 @@ export default {
     }
   }
 }
-
+ ::v-deep .el-main{
+  text-align: start;
+}
 .el-aside {
   background-color: #03275e;
   color: #333;
   // text-align: center;
   // line-height: 200px;
   padding-top: 20px;
+
   .el-menu--collapse{
     width: 100%;
   }
@@ -186,6 +189,26 @@ export default {
   }
   .el-menu-item.is-active {
   background: #3374F3 !important;
+}
+// 自定义图标
+.el-icon-home{
+    background: url("../assets/img/home.png") center no-repeat;
+    background-size: cover;
+}
+.iconguanggaoguanli{
+    background: url("../assets/img/guanggao.png") center no-repeat;
+    background-size: cover;
+}
+.el-icon-picture{
+    background: url("../assets/img/tupian.png") center no-repeat;
+    background-size: cover;
+}
+.el-icon-home:before,
+.iconguanggaoguanli:before,
+.el-icon-picture:before{
+    content: "\66ff";
+    font-size: 16px;
+    visibility: hidden;
 }
 }
 

@@ -1,6 +1,6 @@
 import axios from 'axios'
 // import vue from 'vue'
-// import router from '../router/index'
+import router from '../router/index'
 // import { baseURL } from '../config/env'
 import { Message } from 'element-ui'
 
@@ -68,23 +68,23 @@ service.interceptors.response.use(
     return response
   },
   error => {
-    // if (error.response.data.code === 504 || error.response.data.code === 404) {
-    //   Message.error({ message: '网络异常请稍后重试' })
-    //   router.push({ name: '404' })
-    // } else if (error.response.data.code === 403) {
-    //   Message.error({ message: '暂无权限,请联系管理员!' })
-    //   router.push({ name: '403' })
-    // } else {
-    //   Message.error({ message: '网络异常请稍后重试' })
-    //   router.push({ name: '404' })
-    // }
+    if (error.data.code === 504 || error.data.code === 404 || error.data.code === 500) {
+      Message.error({ message: '网络异常，请稍后重试' })
+      router.push({ name: '404' })
+    } else if (error.data.code === 403) {
+      Message.error({ message: '登录已过期，请重新登录' })
+      router.push({ name: 'login' })
+    } else {
+      Message.error({ message: '网络异常，请稍后重试' })
+      router.push({ name: '404' })
+    }
     console.log(error)
     return Promise.reject(error)
   }
 )
 
 // 封装不同环境请求
-const base = process.env.VUE_APP_HOST === 'production' ? '' : '/api'
+const base = process.env.NODE_ENV === 'production' ? '' : '/api'
 
 export const postRequest = (url, params) => {
   return service({

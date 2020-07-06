@@ -1,5 +1,5 @@
 {
-  "name": "hm-toutiao-admin",
+  "name": "ad-management",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "axios": "^0.19.2",
+    "compression-webpack-plugin": "^4.0.0",
     "core-js": "^3.6.4",
     "element-ui": "^2.13.0",
     "lib-flexible": "^0.3.2",

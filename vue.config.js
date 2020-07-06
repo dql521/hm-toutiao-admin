@@ -1,14 +1,4 @@
-// let path = require('path');
-// let webpack = require('webpack');
-// // /*
-//  html-webpack-plugin插件，webpack中生成HTML的插件，
-//  具体可以去这里查看https://www.npmjs.com/package/html-webpack-plugin
-// //  */
-// let HtmlWebpackPlugin = require('html-webpack-plugin');
-// // /*
-// //  webpack插件，提取公共模块
-// //  */
-// let CommonsChunkPlugin = webpack.optimize.CommonsChunkPlugin;
+
 console.log(process.env.VUE_APP_HOST)
 module.exports = {
   devServer: {
@@ -44,118 +34,134 @@ module.exports = {
   lintOnSave: false, // 关闭eslint校验
   productionSourceMap: false
 
-  // 入口文件配置
-  // entry: {
-  //   index: path.resolve(__dirname, 'src/js/page/index.js'),
-  //   vendors: ['vue', 'vue-router','vue-resource','vuex','element-ui','element-ui/lib/theme-default/index.css'] // 需要进行单独打包的文件
-  // },
-  // //出口文件配置
-  // output: {
-  //   path: path.join(__dirname, 'dist'), //输出目录的配置，模板、样式、脚本、图片等资源的路径配置都相对于它
-  //   publicPath: '/dist/',                //模板、样式、脚本、图片等资源对应的server上的路径
-  //   filename: 'js/[name].js',            //每个页面对应的主js的生成配置
-  //   chunkFilename: 'js/[name].asyncChunk.js?'+new Date().getTime() //chunk生成的配置
-  // },
-  // module: {
-  //   //加载器
-  //   rules: [
-  //     {
-  //       test: /\.vue$/,
-  //       loader: 'vue-loader',
-  //       options: {
-  //         loaders: {
-  //           scss: 'vue-style-loader!css-loader!sass-loader', // <style lang="scss">
-  //           sass: 'vue-style-loader!css-loader!sass-loader?indentedSyntax' // <style lang="sass">
-  //         }
-  //       }
-  //     },
-  //     {
-  //       test: /\.html$/,
-  //       loader: "raw-loader"
-  //     },
-  //     {
-  //       test: /\.css$/,
-  //       loader: 'style-loader!css-loader'
-  //     },
-  //     {
-  //       test: /\.js$/,
-  //       exclude: /node_modules/,
-  //       loader: "babel-loader",
-  //       options: {
-  //         presets: ["es2015","stage-0"],
-  //         plugins: ['syntax-dynamic-import']
-  //       }
-  //     },
-  //     {
-  //       test: /\.scss$/,
-  //       loader: 'style-loader!css-loader!sass-loader'
-  //     },
-  //     {
-  //       test: /\.(eot|svg|ttf|woff|woff2)(\?\S*)?$/,
-  //       loader: 'file-loader'
-  //     },
-  //     {
-  //       //图片加载器，雷同file-loader，更适合图片，可以将较小的图片转成base64，减少http请求
-  //       //如下配置，将小于8192byte的图片转成base64码
-  //       test: /\.(png|jpg|gif)$/,
-  //       loader: 'url-loader?limit=8192&name=images/[hash].[ext]'
-  //     }
-  //   ]
-  // },
-  // plugins: [
-  //   //webpack3.0的范围提升
-  //   new webpack.optimize.ModuleConcatenationPlugin(),
-  //   //打包生成html文件，并且将js文件引入进来
-  //   new HtmlWebpackPlugin({
-  //     filename: path.resolve(__dirname, 'dist/html/index.html'), //生成的html存放路径，相对于path
-  //     template: path.resolve(__dirname, 'src/html/index.html'), //ejs模板路径,前面最好加上loader用于处理
-  //     inject: 'body',  //js插入的位置，true/'head'/'body'/false
-  //     hash: true
-  //   }),
-  //   //提取功能模块
-  //   new CommonsChunkPlugin({
-  //     name: 'vendors', // 将公共模块提取，生成名为`vendors`的chunk
-  //     minChunks: 2, //公共模块被使用的最小次数。配置为2，也就是同一个模块只有被2个以外的页面同时引用时才会被提取出来作为common chunks
-  //     // children:true  //如果为true,那么公共组件的所有子依赖都将被选择进来
-  //   }),
-  // ],
-  // //使用webpack-dev-server，启动热刷新插件
-  // devServer: {
-  //   contentBase: path.join(__dirname, "/"),
-  //   host: 'localhost',  //建议写IP地址，开发时候电脑的ip地址。localhost我不知道是幻觉还是怎样，有时候热刷新不灵敏
-  //   port: 9090, //默认9090
-  //   inline: true, //可以监控js变化
-  //   hot: true, //热启动
-  //   open: true, //打开浏览器
-  // },
-  // optimization: {
-  //   //抽取公共的dm
-  //       splitChunks: {
-  //           cacheGroups: {
-  //               commons: {
-  //                 //  name: "commons",
-  //                  chunks: "initial",
-  //                   minChunks: 2,
-  //                   minSize: 0
-  //               }
-  //           }
-  //       }
-  //   },
-  //   vendor: {
-  //     test: /node_modules/,
-  //     chunks: "initial",
-  //     name: vendor,
-  //     priority: 10,
-  //     enforce:  true
-
-  //   },
-  // //搜索路径变量
-  // resolve: {
-  //   alias: {
-  //     vue: 'vue/dist/vue.js'
-  //   },
-  //   extensions:['.js','.scss','.vue','.json']// 可以不加后缀, 直接使用 import xx from 'xx' 的语法
-  // }
 }
-// module.exports = config;
-//  config
+
+// const path = require('path')
+// const resolve = dir => path.resolve(__dirname, dir)
+// const IS_PROD = ['production', 'prod'].includes(process.env.NODE_ENV)
+// const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+// const CompressionWebpackPlugin = require('compression-webpack-plugin');
+// const productionGzipExtensions = /\.(js|css|json|txt|html|ico|svg)(\?.*)?$/i;
+
+// module.exports = {
+//  transpileDependencies: ['webpack-dev-server/client'],
+
+//  // 基本路径
+//  // baseUrl: './',
+//  publicPath: './',
+//  // 输出文件目录
+//  outputDir: 'dist',
+//  // eslint-loader 是否在保存的时候检查
+//  lintOnSave: false,
+//  assetsDir: '', // 相对于outputDir的静态资源(js、css、img、fonts)目录
+//  runtimeCompiler: true, // 是否使用包含运行时编译器的 Vue 构建版本
+//  // 生产环境是否生成 sourceMap 文件
+//  productionSourceMap: false,
+
+//  chainWebpack: config => {
+//   config.entry.app = ['babel-polyfill', './src/main.js'];
+//   // 修复HMR
+//   config.resolve.symlinks(true);
+//   //修复 Lazy loading routes Error
+//   config.plugin('html').tap(args => {
+//    args[0].chunksSortMode = 'none';
+//    return args;
+//   });
+//   // 添加别名
+//   config.resolve.alias
+//    .set('@', resolve('src'))
+//    .set('assets', resolve('src/assets'))
+//    .set('img', resolve('src/assets/img'))
+//    .set('components', resolve('src/components'))
+//    .set('layout', resolve('src/layout'))
+//    .set('base', resolve('src/base'))
+//    .set('static', resolve('src/static'));
+//   //压缩图片
+//   config.module
+//    .rule("images")
+//    .use("image-webpack-loader")
+//    .loader("image-webpack-loader")
+//    .options({
+//     // mozjpeg: {progressive: true, quality: 65},
+//     // optipng: {enabled: false},
+//     // pngquant: {quality: [30, 65], speed: 4},
+//     // gifsicle: {interlaced: false},
+//     // webp: {quality: 75},
+//     bypassOnDebug: true
+//    });
+
+//   // 打包分析
+//   // if (process.env.VUE_APP_HOST) {
+//   //  config.plugin('webpack-report')
+//   //   .use(BundleAnalyzerPlugin, [{
+//   //    analyzerMode: 'static',
+//   //   }]);
+//   // }
+//  },
+
+//  configureWebpack: config => {
+//   if (IS_PROD) {
+//    const plugins = [];
+//    //开启 gzip 压缩
+//    plugins.push(
+//     new CompressionWebpackPlugin({
+//      filename: '[path].gz[query]',
+//      algorithm: 'gzip',
+//      test: productionGzipExtensions,
+//      threshold: 10240,
+//      minRatio: 0.8
+//     })
+//    );
+
+//    config.plugins = [
+//     ...config.plugins,
+//     ...plugins
+//    ];
+//   }
+//  },
+//  // css相关配置
+//  css: {
+//   extract: true,
+//   sourceMap: false,
+//   loaderOptions: {
+//     postcss: {
+//               plugins: [
+//                 require('postcss-px2rem')({
+//                   remUnit: 192
+//                   // rootValue: 192
+//                   // mediaQuery: true
+//                 })
+//               ]
+//             }
+//   },
+//   modules: false
+// },
+//  parallel: require('os').cpus().length > 1,
+//  pwa: {},
+//  devServer: {
+//   open: true,
+//   hot: true,
+//   // host: '0.0.0.0',
+//   port: 8080,
+//   https: false,
+//   // hotOnly: false,
+//   proxy: { // 开发环境代理配置
+//           '/api': { // 匹配 /dev-api 开头的请求，
+//             // 目标服务器地址
+//             target: 'http://192.168.88.186/advesy',
+//             changeOrigin: true, // 开启代理服务器，上线时关闭代理
+//             pathRewrite: {
+//               //  会将 /dev-api 替换为 '',也就是 /dev-api 会移除，
+//               // 如 /dev-api/db.json 代理到 https://localhost:8080/db.json
+//               '^/api': ''
+//             }
+//           }
+//         }, // 设置代理
+//   before: app => {
+//   }
+//  },
+
+//  // 第三方插件配置
+//  pluginOptions: {}
+
+// };
