@@ -36,19 +36,19 @@ VueRouter.prototype.push = function push (location) {
 }
 
 // 导航守卫
-router.beforeEach((to, from, next) => {
-  window.document.title = to.meta.title || '线上统一广告平台'
-  const token = localStorage.getItem('token')
-  if (token || to.path === '/login') {
-    next()
-  } else {
-    // router.push('/login')
-    router.replace({
-      path: '/login',
-      query: {
-        redirect: router.currentRoute.fullPath
-      }
-    })
-  }
-})
+// router.beforeEach((to, from, next) => {
+//   window.document.title = to.meta.title || '线上统一广告平台'
+//   const token = localStorage.getItem('token')
+//   if (token || to.path === '/login') {
+//     next()
+//   } else {
+//     // router.push('/login')
+//     router.replace({
+//       path: '/login',
+//       query: {
+//         redirect: router.currentRoute.fullPath
+//       }
+//     })
+//   }
+// })
 export default router

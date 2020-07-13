@@ -68,23 +68,23 @@ service.interceptors.response.use(
     return response
   },
   error => {
-    if (error.data.code === 504 || error.data.code === 404 || error.data.code === 500) {
-      Message.error({ message: '网络异常，请稍后重试' })
-      router.push({ name: '404' })
-    } else if (error.data.code === 403) {
-      Message.error({ message: '登录已过期，请重新登录' })
-      router.push({ name: 'login' })
-    } else {
-      Message.error({ message: '网络异常，请稍后重试' })
-      router.push({ name: '404' })
-    }
+    // if (error.response.data.code === 504 || error.response.data.code === 404 || error.response.data.code === 500) {
+    //   Message.error({ message: '网络异常，请稍后重试' })
+    //   router.push({ name: '404' })
+    // } else if (error.response.data.code === 403) {
+    //   Message.error({ message: '登录已过期，请重新登录' })
+    //   router.push({ name: 'login' })
+    // } else {
+    //   Message.error({ message: '网络异常，请稍后重试' })
+    //   router.push({ name: '404' })
+    // }
     console.log(error)
     return Promise.reject(error)
   }
 )
 
 // 封装不同环境请求
-const base = process.env.NODE_ENV === 'production' ? '' : '/api'
+const base = process.env.NODE_ENV === 'production' ? '/advesy' : '/api'
 
 export const postRequest = (url, params) => {
   return service({

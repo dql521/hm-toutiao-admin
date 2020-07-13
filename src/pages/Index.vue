@@ -10,7 +10,9 @@
             <h1>{{total.current}}</h1>
             <span style="margin-right: 20px;">上周：{{total.last}}</span>
             <span>同比：{{total.rate}}%</span>
-            <i class="el-icon-top"></i>
+            <i
+            :class="oldTotal < total.rate ? 'el-icon-Asc'  : 'el-icon-Desc' "
+            ></i>
           </div>
         </div>
       </div>
@@ -19,10 +21,10 @@
           <img src="../assets/img/NotOnline.png" />
           <div class="item_data">
             <p>待上线数量</p>
-           <h1>{{published.current}}</h1>
-            <span style="margin-right: 20px;">上周：{{published.last}}</span>
-            <span>同比：{{published.rate}}%</span>
-            <i class="el-icon-top"></i>
+           <h1>{{topublish.current}}</h1>
+            <span style="margin-right: 10px;">上周：{{topublish.last}}</span>
+            <span>同比：{{topublish.rate}}%</span>
+            <i :class="oldTopublish < topublish.rate ? 'el-icon-Asc'  : 'el-icon-Desc' "></i>
           </div>
         </div>
       </div>
@@ -32,9 +34,9 @@
           <div class="item_data">
             <p>上架中数量</p>
             <h1>{{publishing.current}}</h1>
-            <span style="margin-right: 20px;">上周：{{publishing.last}}</span>
+            <span style="margin-right: 10px;">上周：{{publishing.last}}</span>
             <span>同比：{{publishing.rate}}%</span>
-            <i class="el-icon-top"></i>
+            <i :class="oldPublishing < publishing.rate ? 'el-icon-Asc'  : 'el-icon-Desc' "></i>
           </div>
         </div>
       </div>
@@ -43,10 +45,10 @@
           <img src="../assets/img/HaveDrop.png" />
           <div class="item_data">
             <p>已下架数量</p>
-            <h1>{{topublish.current}}</h1>
-            <span style="margin-right: 20px;">上周：{{topublish.last}}</span>
-            <span>同比：{{topublish.rate}}%</span>
-            <i class="el-icon-top"></i>
+            <h1>{{published.current}}</h1>
+            <span style="margin-right: 10px;">上周：{{published.last}}</span>
+            <span>同比：{{published.rate}}%</span>
+            <i :class="oldPublished < published.rate ? 'el-icon-Asc' : 'el-icon-Desc'"></i>
           </div>
         </div>
       </div>
@@ -67,58 +69,50 @@ import { getCountDate } from '../api/api'
 export default {
   data () {
     return {
-      ADdata: [],
-      total: {
-        current: 0,
-        last: 153,
-        rate: 8
-      },
-      published: {
-        current: 0,
-        last: 277,
-        rate: 4
-      },
-      publishing: {
-        current: 0,
-        last: 96,
-        rate: 5
-      },
-      topublish: {
-        current: 0,
-        last: 277,
-        rate: 4
-      },
+      total: {}, // 总数
+      published: {}, // 已下架
+      publishing: {}, // 上架中
+      topublish: {}, // 待上架
+      oldTotal: 0,
+      oldPublished: 0,
+      oldPublishing: 0,
+      oldTopublish: 0,
       shortcutMenuDatas: [
-        { img: require('@/assets/img/myPublish.png'), id: 0, path: '/adpublish' },
+        { img: require('@/assets/img/myPublish.png'), id: 0, path: '/adPublish' },
         { img: require('@/assets/img/LetMeSee.png'), id: 1, path: '/postlist' },
         { img: require('@/assets/img/MyImage.png'), id: 2, path: '/gallery' }
-      ],
-      fixedInfo: [
-        { icon: require('@/assets/img/AdvertisementsCount.png'), title: '总广告数' },
-        { icon: require('@/assets/img/NotOnline.png'), title: '待上线数量' },
-        { icon: require('@/assets/img/On-Line.png'), title: '上架中数量' },
-        { icon: require('@/assets/img/HaveDrop.png'), title: '已下架数量' }
       ]
     }
   },
   created () {
+    this.getOldRate()
     this.getCountDates()
   },
   mounted () {},
   methods: {
+    // 获取旧的同比数据
+    getOldRate () {
+      const that = this.$store.state
+      this.oldTotal = that.oldTotal
+      this.oldPublished = that.oldPublished
+      this.oldPublishing = that.oldPublishing
+      this.oldTopublish = that.oldTopublish
+    },
+    // 获取最新数据
     async getCountDates () {
       const res = await getCountDate()
       const { code, data } = res.data
       if (code === 200) {
-        data.forEach(item => {
-          // item[icon] = require('@/assets/img/AdvertisementsCount.png')
-          console.log(item)
-        })
-        // index_count_data_total.icon = require('@/assets/img/AdvertisementsCount.png')
-        // index_count_data_total.title = '总广告数'
-        // console.log(index_count_data_total)
+        console.log(data)
 
-        // {index_count_data_total, index_count_data_published,index_count_data_publishing,index_count_data_topublish}
+        this.total = data[0].index_count_data_total
+        this.published = data[1].index_count_data_published
+        this.publishing = data[2].index_count_data_publishing
+        this.topublish = data[3].index_count_data_topublish
+        this.$store.commit('SET_oldTotal', this.total.rate)
+        this.$store.commit('SET_oldPublished', this.published.rate)
+        this.$store.commit('SET_oldTPublishing', this.publishing.rate)
+        this.$store.commit('SET_oldTopublish', this.topublish.rate)
       }
     }
   }
@@ -161,7 +155,6 @@ export default {
   flex: 1;
   text-align: start;
   margin-left: 32px;
-  font-family: "PingFang-SC-Regular,PingFang-SC";
   font-weight: 400;
   p {
     font-size: 16px;
@@ -176,22 +169,32 @@ export default {
     line-height: 70px;
     margin: 0;
   }
-  span,
-  i {
+  span{
     font-size: 16px;
     color: rgba(143, 153, 171, 1);
     line-height: 22px;
   }
-  i {
-    font-weight: 900;
-    margin-left: 5px;
-  }
-  .el-icon-top {
-    color: #21ce54;
-  }
-  .el-icon-bottom {
-    color: #d80000;
-  }
+ i{
+   margin-left: 5px;
+ }
+  .el-icon-Asc{
+      // font-weight: 700;
+      margin-right: 5px;
+      background: url("../assets/img/Asc.png") center no-repeat;
+    background-size: cover;
+    }
+    .el-icon-Desc{
+      // font-weight: 700;
+      margin-left: 5px;
+      background: url("../assets/img/Desc.png") center no-repeat;
+    background-size: cover;
+    }
+    .el-icon-Asc:before,
+    .el-icon-Desc:before{
+      content: "\66ff";
+    font-size: 12px;
+    visibility: hidden;
+    }
 }
 
 .shortcut_menu {

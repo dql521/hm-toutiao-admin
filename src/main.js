@@ -1,12 +1,12 @@
 import Vue from 'vue'
 import App from './App.vue'
 import router from './router'
+import store from './store'
 import { getRequest, postRequest } from '../src/utils/request'
 // import axios from 'axios'
 import moment from 'moment'
 import ElementUi from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
-import './assets/font/iconfont.css'
 import 'lib-flexible'
 
 Vue.config.productionTip = false
@@ -24,6 +24,8 @@ Vue.prototype.$fixUrl = function (url) {
 
 Vue.prototype.getRequest = getRequest
 Vue.prototype.postRequest = postRequest
+Vue.prototype.$store = store
+Vue.prototype.$baseUrl = process.env.VUE_APP_HOST
 
 Vue.use(ElementUi)
 Vue.filter('time', function (input) {

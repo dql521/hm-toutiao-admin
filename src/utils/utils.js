@@ -1,6 +1,6 @@
 // 公共方法
 import vue from 'vue'
-import { Loading } from 'element-ui'
+import { Loading, Message } from 'element-ui'
 
 // 加载效果
 let loadingCount = 0

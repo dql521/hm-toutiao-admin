@@ -102,7 +102,6 @@ export default {
     },
     toggleCollapse () {
       this.isCollapse = !this.isCollapse
-      console.log(this.isCollapse)
     }
   }
 }
@@ -154,9 +153,7 @@ export default {
     }
   }
 }
- ::v-deep .el-main{
-  text-align: start;
-}
+
 .el-aside {
   background-color: #03275e;
   color: #333;
@@ -170,6 +167,7 @@ export default {
   .el-menu {
     border: none;
     font-size: 24px;
+
     .el-menu-item i,
     .el-submenu__title i,
     .el-menu-item span,
