@@ -1,10 +1,12 @@
 <template>
   <div class="post-publish">
+    <!-- 头部渠道 -->
     <el-tabs type="border-card" v-model="activeName">
       <el-tab-pane v-for="item in channelTab" :key="item.id">
         <div slot="label" @click="getChannelId(item.id)">{{item.name}}</div>
       </el-tab-pane>
     </el-tabs>
+
     <div class="step_content">
       <!-- 新增渠道 -->
       <el-button type="primary" @click="isDlag = true" class="new_button">
@@ -12,18 +14,18 @@
         新增渠道
       </el-button>
       <!-- 步骤条 -->
-    <div class="steps">
-      <el-steps :active="active" finish-status="success">
-        <el-step>
-          <span slot="title">填写广告信息及投放位置</span>
-        </el-step>
-        <el-step>
-<span slot="title">填写广告信息及投放位置</span>
-</el-step>
-        <el-step class="width_style">
-<span slot="title">生成广告</span>
-        </el-step>
-      </el-steps>
+      <div class="steps">
+        <el-steps :active="active" finish-status="success">
+          <el-step>
+            <span slot="title">填写广告信息及投放位置</span>
+          </el-step>
+          <el-step>
+            <span slot="title">填写广告信息及投放位置</span>
+          </el-step>
+          <el-step class="width_style">
+            <span slot="title">生成广告</span>
+          </el-step>
+        </el-steps>
       </div>
     </div>
     <!-- 发布广告 -->
@@ -33,20 +35,22 @@
         <div class="tree_title">
           <span>已新建的</span>
           <div class="tree_operation">
-            <el-dropdown>
+            <el-dropdown placement="bottom" :hide-on-click="false">
               <span class="el-dropdown-link">
                 <i class="el-icon-Search"></i>
               </span>
               <el-dropdown-menu slot="dropdown">
-                <el-dropdown-item>搜索模块</el-dropdown-item>
+                <el-dropdown-item>
+                  <el-input placeholder="输入关键字进行搜素" v-model="filterText" size="small"></el-input>
+                </el-dropdown-item>
               </el-dropdown-menu>
             </el-dropdown>
-            <el-dropdown>
+            <el-dropdown placement="bottom">
               <span class="el-dropdown-link" style="padding: 0 26px;">
                 <i class="el-icon-CreateModule"></i>
               </span>
               <el-dropdown-menu slot="dropdown">
-                <el-dropdown-item @click.native="isModuleDlag = true">新建主模块</el-dropdown-item>
+                <el-dropdown-item @click.native="addCildModule(0)">新建主模块</el-dropdown-item>
               </el-dropdown-menu>
             </el-dropdown>
           </div>
@@ -59,38 +63,35 @@
             :highlight-current="true"
             :expand-on-click-node="false"
             :check-on-click-node="true"
+            ref="tree"
+            :filter-node-method="filterNode"
           >
             <span class="custom-tree-node" slot-scope="{ data }">
               <span>{{ data.text }}</span>
               <span v-if="data.attributes.type === 0">
-                <el-dropdown placement="bottom-start" class="bianji">
+                <el-dropdown placement="bottom" :hide-on-click="false" class="bianji">
                   <span class="el-dropdown-link">
                     <i class="el-icon-bianji"></i>
                   </span>
                   <el-dropdown-menu slot="dropdown">
-                    <el-dropdown-item
+              <el-dropdown-item
                       @click.native="getAlterModule(data.text,data.parentId,data.id)"
                     >修改属性</el-dropdown-item>
-                    <el-dropdown-item @click.native="getModulesCild(data.id)">新增子栏位</el-dropdown-item>
-                    <el-dropdown-item style="color: red;">删除</el-dropdown-item>
+               <el-dropdown-item @click.native="getModulesCild(data.id)">新增子栏位</el-dropdown-item>
+               <el-dropdown-item style="color: red;" @click.native="notOpen">删除</el-dropdown-item>
                   </el-dropdown-menu>
                 </el-dropdown>
-                <el-dropdown placement="bottom-start" class="add_cild_module">
+                <el-dropdown placement="bottom" class="add_cild_module">
                   <span class="el-dropdown-link">
                     <i class="el-icon-CreateModule"></i>
                   </span>
                   <el-dropdown-menu slot="dropdown">
-                    <el-dropdown-item @click.native="addCildModule(data.id)">添加模块</el-dropdown-item>
+                    <el-dropdown-item @click.native="addCildModule(data.id)">增加模块</el-dropdown-item>
                   </el-dropdown-menu>
                 </el-dropdown>
               </span>
             </span>
           </el-tree>
-          <div class="add_cildModule" v-if="moduleData.length > 0" @click="isisModuleDlag = true">
-            <el-link style="color:#409EFF;">
-              <span class="el-icon-CreateModule"></span>增加模块
-            </el-link>
-          </div>
         </div>
       </div>
       <!-- 广告发布表单 -->
@@ -161,46 +162,20 @@
         </div>
       </div>
     </div>
-    <!-- <el-form :model="form" label-width="80px">
-    <el-form-item label="标题">
-      <el-input v-model="form.title"></el-input>
-    </el-form-item>
-    <el-form-item label="内容">
-      <vue-editor v-model="form.content"></vue-editor>
-    </el-form-item>
-    <el-form-item label="栏目">
-      <el-checkbox-group v-model="form.categories">
-        <el-checkbox v-for="item in categoryList" :key="item.id" :label="item.id">{{item.name}}</el-checkbox>
-    </el-checkbox-group>
-    </el-form-item>
-    <el-form-item label="封面">
-      <el-upload
-      list-type="picture-card"
-      :action="'http://localhost:3000' + '/upload'"
-      :headers="headers"
-      :on-success="handleSuccess"
-      :file-list="fileList"
-      :on-remove="handleRemove">
-      <i class="el-icon-plus avatar-uploader-icon"></i>
-    </el-upload>
-    </el-form-item>
-  <el-form-item label="类型">
-    <el-radio-group v-model="form.type">
-      <el-radio :label="1">文章</el-radio>
-      <el-radio :label="2">视频</el-radio>
-    </el-radio-group>
-  </el-form-item>
-  <el-form-item>
-    <el-button type="primary" @click="publish">发布</el-button>
-  </el-form-item>
-    </el-form>-->
+
     <!-- 新增渠道弹框 -->
-    <el-dialog title="新增渠道" :visible.sync="isDlag" width="553px">
-      <el-form :model="form" class="new_channelFrom">
-        <el-form-item label="渠道名称：" :required="true">
+    <el-dialog title="新增渠道" :visible.sync="isDlag" width="532px">
+      <el-form
+        :model="form"
+        class="new_channelFrom"
+        label-width="120px"
+        :rules="rules"
+        label-position="left"
+      >
+        <el-form-item label="渠道名称：" prop="name">
           <el-input v-model="form.name" placeholder="请输入渠道名称"></el-input>
         </el-form-item>
-        <el-form-item label="图片接入网络：" :required="true">
+        <el-form-item label="图片接入网络：" required>
           <el-radio-group v-model="form.netType">
             <el-radio :label="0">内网</el-radio>
             <el-radio :label="1">外网</el-radio>
@@ -212,9 +187,16 @@
         <el-button type="primary" @click="addChannel">确 定</el-button>
       </div>
     </el-dialog>
-    <el-dialog title="新增主模块" :visible.sync="isModuleDlag" width="553px">
-      <el-form :model="modules" class="module_">
-        <el-form-item label="主模块名称：" :required="true">
+    <!-- 新增主模块 -->
+    <el-dialog title="新建主模块" :visible.sync="isModuleDlag" width="532px">
+      <el-form
+        :model="modules"
+        class="module_"
+        label-width="100px"
+        :rules="rules"
+        label-position="left"
+      >
+        <el-form-item label="主模块名称：" prop="name">
           <el-input v-model="modules.name" placeholder="请输入主模块名称"></el-input>
         </el-form-item>
       </el-form>
@@ -223,10 +205,29 @@
         <el-button type="primary" @click="moduleAdd">确 定</el-button>
       </div>
     </el-dialog>
-    <el-dialog :visible.sync="isAlterDlag" width="350px">
+    <!-- 新建子模块 -->
+    <el-dialog title="新增模块" :visible.sync="isCildModuleDlag" width="532px">
+      <el-form
+        :model="modules"
+        class="module_"
+        label-width="100px"
+        :rules="rules"
+        label-position="left"
+      >
+        <el-form-item label="模块名称：" prop="name">
+          <el-input v-model="modules.name" placeholder="请输入模块名称"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="isCildModuleDlag = false">取 消</el-button>
+        <el-button type="primary" @click="moduleAdd">确 定</el-button>
+      </div>
+    </el-dialog>
+    <!-- 修改属性 -->
+    <el-dialog title="修改属性" :visible.sync="isAlterDlag" width="350px">
       <el-form :model="modules">
         <el-form-item>
-          <el-input v-model="modules.name"></el-input>
+          <el-input v-model="modules.name" placeholder="请输入属性名称"></el-input>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -236,11 +237,11 @@
     </el-dialog>
     <!-- 添加子烂尾 -->
     <el-dialog title="新增子栏位" :visible.sync="isAddModuleCild" width="552px">
-      <el-form :model="modules" class="module_child">
-        <el-form-item label="子栏位名称：" prop="name" :required="true">
-          <el-input v-model="modules.name"></el-input>
+      <el-form :model="modules" class="module_child" label-width="100px" label-position="left">
+        <el-form-item label="子栏位名称:" prop="name">
+          <el-input v-model="modules.name" placeholder="请输入子栏位名称"></el-input>
         </el-form-item>
-        <el-form-item label="广告图类型：" prop="adsType" :required="true">
+        <el-form-item label="广告图类型:" prop="adsType">
           <el-radio-group v-model="modules.adsType">
             <el-radio :label="0">单张图</el-radio>
             <el-radio :label="-1">轮播图</el-radio>
@@ -257,12 +258,12 @@
           </el-select>张
         </el-form-item>
 
-        <el-form-item label="广告尺寸：" :required="true">
+        <el-form-item label="广告尺寸:" class="ad_size">
           <el-input v-model="imgWSize"></el-input>
           <span style="color:#E0E0E0;">×</span>
           <el-input v-model="imgHSize"></el-input>
         </el-form-item>
-        <el-form-item label="默认图片：" :required="true">
+        <el-form-item label="默认图片:">
           <el-upload
             class="upload-demo"
             :data="modules"
@@ -287,73 +288,53 @@
       </div>
     </el-dialog>
 
-<el-dialog title="选择图片" :visible.sync="isPictrueDialog">
-  <el-tabs tab-position="left">
-    <el-tab-pane label="用户管理">
-      <div class="pictrue_content">
-      <ul>
-        <li v-for="item in menuList" :key="item.id">
-          <el-image :src="item.src" fit="fill" lazy>></el-image>
-          <div class="set_pictrue">
-            <el-dropdown>
-              <span class="el-dropdown-link">
-                <i class="el-icon-Set"></i>
-              </span>
-              <el-dropdown-menu slot="dropdown">
-                <el-dropdown-item @click.native="showDialog(item.src)">查看</el-dropdown-item>
-                <el-dropdown-item>替换</el-dropdown-item>
-              </el-dropdown-menu>
-            </el-dropdown>
+    <el-dialog title="选择图片" :visible.sync="isPictrueDialog">
+      <div class="choose_pictrue">
+        <div class="tabs">
+          <el-tabs tab-position="left">
+            <el-tab-pane v-model="activeName" v-for="item in channelTab" :key="item.id">配置管理</el-tab-pane>
+          </el-tabs>
+        </div>
+        <div class="pictrue_content">
+          <div class="local_up">
+            <span>格式要求：&ensp;</span>
+            <el-popover placement="bottom" trigger="hover" content="仅支持png/jpg/jpeg格式">
+              <span class="el-icon-Tip" slot="reference"></span>
+            </el-popover>
+            <span class="upload">
+              <el-upload action="#" multiple :limit="3" :file-list="fileList">
+                <el-button size="small" type="primary">本地上传</el-button>
+              </el-upload>
+            </span>
           </div>
-          <div class="state" v-if="state">使用中</div>
-        </li>
-      </ul>
-    </div>
-    </el-tab-pane>
-    <el-tab-pane v-model="activeName" v-for="item in channelTab" :key="item.id">配置管理</el-tab-pane>
-    <el-tab-pane label="角色管理">角色管理</el-tab-pane>
-    <el-tab-pane label="定时任务补偿">定时任务补偿</el-tab-pane>
-  </el-tabs>
-</el-dialog>
-    <!-- 表单编辑区 -->
-    <!-- <el-form :model="form" label-width="80px">
-    <el-form-item label="标题">
-      <el-input v-model="form.title"></el-input>
-    </el-form-item>
-    <el-form-item label="内容">
-      <vue-editor v-model="form.content"></vue-editor>
-    </el-form-item>
-    <el-form-item label="栏目">
-      <el-checkbox-group v-model="form.categories">
-        <el-checkbox v-for="item in categoryList" :key="item.id" :label="item.id">{{item.name}}</el-checkbox>
-    </el-checkbox-group>
-    </el-form-item>
-    <el-form-item label="封面">
-      <el-upload
-      list-type="picture-card"
-      :action="'http://localhost:3000' + '/upload'"
-      :headers="headers"
-      :on-success="handleSuccess"
-      :file-list="fileList"
-      :on-remove="handleRemove">
-      <i class="el-icon-plus avatar-uploader-icon"></i>
-    </el-upload>
-    </el-form-item>
-  <el-form-item label="类型">
-    <el-radio-group v-model="form.type">
-      <el-radio :label="1">文章</el-radio>
-      <el-radio :label="2">视频</el-radio>
-    </el-radio-group>
-  </el-form-item>
-  <el-form-item>
-    <el-button type="primary" @click="publish">发布</el-button>
-  </el-form-item>
-    </el-form>-->
+          <ul>
+            <li v-for="item in menuList" :key="item.id">
+              <el-image :src="item.src" fit="fill" lazy>></el-image>
+              <div class="set_pictrue">
+                <el-dropdown>
+                  <span class="el-dropdown-link">
+                    <i class="el-icon-Set"></i>
+                  </span>
+                  <el-dropdown-menu slot="dropdown">
+                    <el-dropdown-item @click.native="showDialog(item.src)">查看</el-dropdown-item>
+                    <el-dropdown-item>替换</el-dropdown-item>
+                  </el-dropdown-menu>
+                </el-dropdown>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="isAddModuleCild = false">取 消</el-button>
+        <el-button type="primary" @click="addModuleCild">确 定</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
 <script>
-import { VueEditor } from 'vue2-editor'
+import { VueEditor } from "vue2-editor";
 import {
   addChannels,
   getChannels,
@@ -361,30 +342,35 @@ import {
   getModule,
   alterModule,
   addModuleCild
-} from '@/api/api'
+} from "@/api/api";
 export default {
   components: {
     VueEditor
   },
-  data () {
+  data() {
     return {
       dates: [],
       active: 1,
-      activeName: '0',
+      activeName: "0",
       channelTab: [],
       isDlag: false,
       isModuleDlag: false,
+      isCildModuleDlag: false,
       isAlterDlag: false,
       isAddModuleCild: false,
-      isPictrueDialog: true,
+      isPictrueDialog: false,
       showFile: true,
-      imgWSize: 100,
-      imgHSize: 100,
-      headers: {
-        token: localStorage.getItem('token')
+      imgWSize: 800,
+      imgHSize: 600,
+      filterText: "",
+      rules: {
+        name: [
+          { required: true, message: "名称不能为空", trigger: "blur" },
+          { min: 2, max: 12, message: "长度在 2 到 12 个字符", trigger: "blur" }
+        ]
       },
       form: {
-        name: '',
+        name: "",
         netType: 0
         // title: '',
         // content: '',
@@ -396,9 +382,9 @@ export default {
         id: null,
         parentId: 0,
         channelId: 7,
-        name: '',
+        name: "",
         type: 0,
-        positionSize: '',
+        positionSize: "",
         adsType: 0,
         adsNum: 8,
         resourceId: null
@@ -406,119 +392,119 @@ export default {
       moduleData: [],
       categoryList: [],
       headers: {
-        token: localStorage.getItem('token')
+        token: localStorage.getItem("token")
       },
-      postId: '',
+      postId: "",
       fileList: [],
       menuList: [
         {
           id: 1,
           src:
-            'https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg',
-          des: '这是第一个描述',
+            "https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg",
+          des: "这是第一个描述",
           price: 198
         },
         {
           id: 2,
           src:
-            'https://ss0.bdstatic.com/94oJfD_bAAcT8t7mm9GUKT-xh_/timg?image&quality=100&size=b4000_4000&sec=1594017553&di=dc121fedd61a7aba370575d0006f9e8e&src=http://a0.att.hudong.com/56/12/01300000164151121576126282411.jpg',
-          des: '这是第二个描述',
+            "https://ss0.bdstatic.com/94oJfD_bAAcT8t7mm9GUKT-xh_/timg?image&quality=100&size=b4000_4000&sec=1594017553&di=dc121fedd61a7aba370575d0006f9e8e&src=http://a0.att.hudong.com/56/12/01300000164151121576126282411.jpg",
+          des: "这是第二个描述",
           price: 198
         },
         {
           id: 3,
           src:
-            'https://ss0.bdstatic.com/94oJfD_bAAcT8t7mm9GUKT-xh_/timg?image&quality=100&size=b4000_4000&sec=1594017553&di=dc121fedd61a7aba370575d0006f9e8e&src=http://a0.att.hudong.com/56/12/01300000164151121576126282411.jpg',
-          des: '这是第三个描述',
+            "https://ss0.bdstatic.com/94oJfD_bAAcT8t7mm9GUKT-xh_/timg?image&quality=100&size=b4000_4000&sec=1594017553&di=dc121fedd61a7aba370575d0006f9e8e&src=http://a0.att.hudong.com/56/12/01300000164151121576126282411.jpg",
+          des: "这是第三个描述",
           price: 211
         },
         {
           id: 4,
           src:
-            'https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1594027754481&di=ea01700f72369abc392074fb512df58b&imgtype=0&src=http%3A%2F%2Fa0.att.hudong.com%2F64%2F76%2F20300001349415131407760417677.jpg',
-          des: '这是第一个描述',
+            "https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1594027754481&di=ea01700f72369abc392074fb512df58b&imgtype=0&src=http%3A%2F%2Fa0.att.hudong.com%2F64%2F76%2F20300001349415131407760417677.jpg",
+          des: "这是第一个描述",
           price: 198
         },
         {
           id: 5,
           src:
-            'https://ss1.bdstatic.com/70cFuXSh_Q1YnxGkpoWK1HF6hhy/it/u=2037841410,2887638459&fm=26&gp=0.jpg',
-          des: '这是第二个描述',
+            "https://ss1.bdstatic.com/70cFuXSh_Q1YnxGkpoWK1HF6hhy/it/u=2037841410,2887638459&fm=26&gp=0.jpg",
+          des: "这是第二个描述",
           price: 112
         },
         {
           id: 6,
           src:
-            'https://fuss10.elemecdn.com/1/34/19aa98b1fcb2781c4fba33d850549jpeg.jpeg',
-          des: '这是第三个描述',
+            "https://fuss10.elemecdn.com/1/34/19aa98b1fcb2781c4fba33d850549jpeg.jpeg",
+          des: "这是第三个描述",
           price: 423
         },
         {
           id: 7,
-          src: 'images/3.jpg',
-          des: '这是第二个描述',
+          src: "images/3.jpg",
+          des: "这是第二个描述",
           price: 112
         },
         {
           id: 8,
-          src: 'images/3.jpg',
-          des: '这是第三个描述',
+          src: "images/3.jpg",
+          des: "这是第三个描述",
           price: 423
         },
         {
           id: 9,
-          src: 'images/3.jpg',
-          des: '这是第二个描述',
+          src: "images/3.jpg",
+          des: "这是第二个描述",
           price: 112
         },
         {
           id: 10,
-          src: 'images/3.jpg',
-          des: '这是第三个描述',
+          src: "images/3.jpg",
+          des: "这是第三个描述",
           price: 423
         },
         {
           id: 11,
-          src: 'images/3.jpg',
-          des: '这是第二个描述',
+          src: "images/3.jpg",
+          des: "这是第二个描述",
           price: 112
         },
         {
           id: 12,
-          src: 'images/3.jpg',
-          des: '这是第三个描述',
+          src: "images/3.jpg",
+          des: "这是第三个描述",
           price: 423
         },
         {
           id: 13,
-          src: 'images/3.jpg',
-          des: '这是第二个描述',
+          src: "images/3.jpg",
+          des: "这是第二个描述",
           price: 112
         },
         {
           id: 14,
-          src: 'images/3.jpg',
-          des: '这是第三个描述',
+          src: "images/3.jpg",
+          des: "这是第三个描述",
           price: 423
         },
         {
           id: 15,
-          src: 'images/3.jpg',
-          des: '这是第二个描述',
+          src: "images/3.jpg",
+          des: "这是第二个描述",
           price: 112
         },
         {
           id: 16,
-          src: 'images/3.jpg',
-          des: '这是第三个描述',
+          src: "images/3.jpg",
+          des: "这是第三个描述",
           price: 423
         }
       ]
-    }
+    };
   },
-  created () {
-    this.getChannel()
-    this.getModule()
+  created() {
+    this.getChannel();
+    this.getModule();
     // this.postId = this.$route.params.id
     // this.getcategoryList()
     // if (this.postId) {
@@ -526,161 +512,177 @@ export default {
     // }
   },
   methods: {
+    //暂未开通功能统一提示
+    notOpen() {
+      this.$message.error('该功能暂未开通，请选择其他操作！')
+      return
+    },
+    // 树状结构节点过滤
+    filterNode(value, data) {
+      if (!value) return true;
+      return data.text.indexOf(value) !== -1;
+    },
     // 图片上传相关
-    exceedMsg () {
-      this.$message.error('默认图片只能上传1张')
+    exceedMsg() {
+      this.$message.error("默认图片只能上传1张");
     },
-    setPositionSize () {
-      this.modules.positionSize = `${this.imgWSize}_${this.imgHSize}`
+    setPositionSize() {
+      this.modules.positionSize = `${this.imgWSize}_${this.imgHSize}`;
     },
-    handleFileSuc (res, file, fileList) {
-      const { code, data, message } = res
+    handleFileSuc(res, file, fileList) {
+      const { code, data, message } = res;
       if (code === 200) {
-        this.modules.resourceId = data.resourceId
-        this.showFile = true
+        this.modules.resourceId = data.resourceId;
+        this.showFile = true;
       } else {
-        this.$message.error(message)
-        this.showFile = false
-        this.fileList = []
+        this.$message.error(message);
+        this.showFile = false;
+        this.fileList = [];
       }
     },
-    handleFileErr (err, file, fileList) {
-      this.$message.error('文件上传失败')
+    handleFileErr(err, file, fileList) {
+      this.$message.error("文件上传失败");
     },
 
     // 获取渠道
-    async getChannel () {
-      const res = await getChannels()
-      const { code, data } = res.data
+    async getChannel() {
+      const res = await getChannels();
+      const { code, data } = res.data;
       if (code === 200) {
-        this.channelTab = data.channelList
+        this.channelTab = data.channelList;
       }
     },
     // 增加渠道
-    async addChannel () {
+    async addChannel() {
       this.channelTab.forEach(item => {
         if (this.form.name == item.name) {
-          this.$message.error('渠道名称已存在')
+          this.$message.error("渠道名称已存在");
+          return;
         }
-      })
-
-      if (this.form.name == '') {
-        this.$message.error('渠道名称不能为空')
-        return
+      });
+      if (this.form.name == "") {
+        this.$message.error("渠道名称不能为空");
+        return;
       }
 
-      const res = await addChannels(JSON.stringify(this.form))
-      const { code, data } = res.data
+      const res = await addChannels(JSON.stringify(this.form));
+      const { code, data } = res.data;
       if (code === 200) {
-        this.$message.success(data)
-        this.getChannel()
-        this.isDlag = false
+        this.$message.success(data);
+        this.getChannel();
+        this.isDlag = false;
       } else {
-        this.$message.error(data)
+        this.$message.error(data);
       }
     },
     // 获取模块数据
-    async getModule () {
-      const res = await getModule({ channelId: this.modules.channelId })
-      const { code, data } = res.data
+    async getModule() {
+      const res = await getModule({ channelId: this.modules.channelId });
+      const { code, data } = res.data;
       if (code === 200) {
-        const { positionTree } = data
-        this.moduleData = positionTree
+        const { positionTree } = data;
+        this.moduleData = positionTree;
       }
     },
     // 添加模块
-    addCildModule (id) {
-      this.isModuleDlag = true
-      this.modules.parentId = id
-      this.modules.type = 0
-    },
-    async moduleAdd () {
-      if (this.modules.name === '') {
-        this.$message.error('主模块不能为空')
-        return
-      }
-      const res = await addModule(this.modules)
-      const { code, message, data } = res.data
-      if (code === 200) {
-        this.isModuleDlag = false
-        this.$message.success(data)
-        this.getModule()
+    addCildModule(id) {
+      if (id === 0) {
+        this.isModuleDlag = true
+        this.modules.parentId = 0;
+        this.modules.type = 0;
       } else {
-        this.$message.error(message)
+      this.isCildModuleDlag = true;
+      this.modules.parentId = id;
+      this.modules.type = 0;
+      }
+    },
+    async moduleAdd() {
+      if (this.modules.name === "") {
+        this.$message.error("模块名称不能为空");
+        return;
+      }
+      const res = await addModule(this.modules);
+      const { code, message, data } = res.data;
+      if (code === 200) {
+        (this.isModuleDlag = false) || (this.isCildModuleDlag = false)
+        this.$message.success(data);
+        this.getModule();
+      } else {
+        this.$message.error(message);
       }
     },
 
-    getChannelId (id) {
-      this.modules.channelId = id
-      this.getModule()
+    getChannelId(id) {
+      this.modules.channelId = id;
+      this.getModule();
     },
     // 获取修改模块参数
-    getAlterModule (name, parentId, id) {
-      this.isAlterDlag = true
-      this.modules.name = name
-      this.modules.parentId = parentId
-      this.modules.id = id
+    getAlterModule(name, parentId, id) {
+      this.isAlterDlag = true;
+      this.modules.name = name;
+      this.modules.parentId = parentId;
+      this.modules.id = id;
     },
     // 修改主模块
-    async alterModule () {
-      const res = await alterModule(this.module)
-      const { code, data } = res.data
+    async alterModule() {
+      const res = await alterModule(this.module);
+      const { code, data } = res.data;
       if (code === 200) {
-        this.isAlterDlag = false
-        this.$message.success(data)
-        this.getModule()
+        this.isAlterDlag = false;
+        this.$message.success(data);
+        this.getModule();
       } else {
-        this.$message.error(message)
+        this.$message.error(message);
       }
     },
     // 获取子栏位参数
-    getModulesCild (id) {
-      this.isAddModuleCild = true
-      this.modules.parentId = id
-      console.log(this.modules.parentId)
+    getModulesCild(id) {
+      this.isAddModuleCild = true;
+      this.modules.parentId = id;
+      console.log(this.modules.parentId);
     },
     // 增加子栏位
-    async addModuleCild () {
-      const { name } = this.modules
-      if (name === '') {
-        this.$message.error('子烂尾名称不能为空')
-        return
+    async addModuleCild() {
+      const { name } = this.modules;
+      if (name === "") {
+        this.$message.error("子烂尾名称不能为空");
+        return;
       }
       if (!this.imgWSize && !this.imgHSize) {
-        this.$message.error('图片尺寸不能为空')
-        return
+        this.$message.error("图片尺寸不能为空");
+        return;
       }
       if (!this.fileList) {
-        this.$message.error('必须上传1张默认图')
-        return
+        this.$message.error("必须上传1张默认图");
+        return;
       }
-      this.modules.type = 1
-      const res = await addModuleCild(this.modules)
-      const { code, data, message } = res.data
+      this.modules.type = 1;
+      const res = await addModuleCild(this.modules);
+      const { code, data, message } = res.data;
       if (code == 200) {
-        this.$message.success(data)
-        this.isAddModuleCild = false
-        this.fileList = []
-        this.getModule()
+        this.$message.success(data);
+        this.isAddModuleCild = false;
+        this.fileList = [];
+        this.getModule();
       } else {
-        this.$message.error(message)
-        this.fileList = []
+        this.$message.error(message);
+        this.fileList = [];
       }
     },
     // 添加树节点
-    append (data) {
-      const newChild = { id: id++, label: 'testtest', children: [] }
+    append(data) {
+      const newChild = { id: id++, label: "testtest", children: [] };
       if (!data.children) {
-        this.$set(data, 'children', [])
+        this.$set(data, "children", []);
       }
-      data.children.push(newChild)
+      data.children.push(newChild);
     },
     // 删除树节点
-    remove (node, data) {
-      const parent = node.parent
-      const children = parent.data.children || parent.data
-      const index = children.findIndex(d => d.id === data.id)
-      children.splice(index, 1)
+    remove(node, data) {
+      const parent = node.parent;
+      const children = parent.data.children || parent.data;
+      const index = children.findIndex(d => d.id === data.id);
+      children.splice(index, 1);
     }
     // async getcategoryList () {
     //   // const res = await this.$axios.get('/category')
@@ -753,8 +755,13 @@ export default {
     // handleRemove (file) {
     //   this.form.cover = this.form.cover.filter(item => item.id !== file.id)
     // }
+  },
+  watch: {
+    filterText: function(val) {
+      this.$refs.tree.filter(val);
+    }
   }
-}
+};
 </script>
 
 <style lang="scss" scoped>
@@ -775,24 +782,24 @@ export default {
     }
   }
 
-  .el-form {
-    margin-top: 20px;
-    .el-form-item {
-      text-align: start;
-      .el-input {
-        width: 384px;
-        height: 40px;
-        margin-left: 32px;
-        .el-input_inner {
-          width: 100%;
-          height: 40px;
-        }
-      }
-      .el-radio:last-child {
-        margin-left: 32px;
-      }
-    }
-  }
+  // .el-form {
+  //   margin-top: 20px;
+  //   .el-form-item {
+  //     text-align: start;
+  //     .el-input {
+  //       width: 384px;
+  //       height: 40px;
+  //       margin-left: 32px;
+  //       .el-input_inner {
+  //         width: 100%;
+  //         height: 40px;
+  //       }
+  //     }
+  //     .el-radio:last-child {
+  //       margin-left: 32px;
+  //     }
+  //   }
+  // }
 
   .step_content {
     border-left: 1px solid #e0e0e0;
@@ -815,31 +822,19 @@ export default {
     }
     .steps {
       padding: 30px 24px;
-      .width_style{
+      .width_style {
         width: 140px;
       }
-      .el-step__title{
+      .el-step__title {
         position: relative;
-        span{
+        span {
           position: absolute;
-    top: -10px;
-    left: 20px;
-    padding: 0 20px;
-    background: #fff;
+          top: -10px;
+          left: 20px;
+          padding: 0 20px;
+          background: #fff;
         }
       }
-//      ::v-deep .el-step__main{
-// .el-step__title{
-//   width: 200px;
-//   height: 40px;
-//         margin-top: -30px;
-//         margin-left: 20px;
-//                padding: 0 30px;
-//         background-color: #fff;
-//         z-index: 19999;
-//       }
-//       }
-
     }
   }
   .publish_content {
@@ -889,13 +884,6 @@ export default {
           content: "\66ff";
           font-size: 16px;
           visibility: hidden;
-        }
-        .add_cildModule {
-          padding: 30px 0;
-          vertical-align: middle;
-          .el-icon-CreateModule {
-            margin-right: 5px;
-          }
         }
       }
       .el-icon-Search {
@@ -986,6 +974,18 @@ export default {
       }
     }
   }
+  .module_child{
+    .el-select{
+      width: 120px;
+      margin: 0 10px;
+    }
+    .ad_size{
+      .el-input{
+        width: 160px;
+        text-align: center;
+      }
+    }
+  }
 }
 ::v-deep .el-tree-node.is-current > .el-tree-node__content {
   color: #3374f3;
@@ -999,75 +999,78 @@ export default {
     }
   }
 }
+::v-deep .el-dialog__header{
+  border: 1px solid #E0E0E0;
+}
 
-  .pictrue_content {
-    width: 760px;
-    padding: 0 24px;
-    ul {
-      display: flex;
-      justify-content: start;
-      flex-wrap: wrap;
-      list-style-type: none;
-      li {
-        width: 160px;
-        height: 90px;
-        margin-right: 23px;
-        margin-bottom: 23px;
-        position: relative;
-        &:nth-child(4n) {
-          margin-right: 0;
-        }
-        &:hover {
-          box-shadow: 0px 0px 10px 5px #eff2f9cc;
-        }
-        .el-image {
-          height: 100%;
+.pictrue_content {
+  width: 760px;
+  padding: 0 24px;
+  ul {
+    display: flex;
+    justify-content: start;
+    flex-wrap: wrap;
+    list-style-type: none;
+    li {
+      width: 160px;
+      height: 90px;
+      margin-right: 23px;
+      margin-bottom: 23px;
+      position: relative;
+      &:nth-child(4n) {
+        margin-right: 0;
+      }
+      &:hover {
+        box-shadow: 0px 0px 10px 5px #eff2f9cc;
+      }
+      .el-image {
+        height: 100%;
+        width: 100%;
+        .el-image__inner {
           width: 100%;
-          .el-image__inner {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            object-position: center;
-          }
-        }
-        .set_pictrue {
-          position: absolute;
-          top: 5px;
-          right: 24px;
-          width: 16px;
-          height: 16px;
-          opacity: 0;
-        }
-        .set_pictrue:hover {
-          opacity: 1;
-          transition: 0.3s all;
-        }
-        .state {
-          width: 80px;
-          height: 30px;
-          line-height: 30px;
-          font-size: 16px;
-          border-radius: 15px;
-          color: #fff;
-          background: #3374f3;
-          text-align: center;
-          position: absolute;
-          right: 30px;
-          bottom: 10px;
+          height: 100%;
+          object-fit: cover;
+          object-position: center;
         }
       }
-    }
-    .el-icon-Set {
-      // font-weight: 700;
-      font-family: "PingFang-SC-Regular,PingFang-SC";
-      margin-right: 5px;
-      background: url("../assets/img/Set.png") center no-repeat;
-      background-size: cover;
-    }
-    .el-icon-Set:before {
-      content: "\66ff";
-      font-size: 16px;
-      visibility: hidden;
+      .set_pictrue {
+        position: absolute;
+        top: 5px;
+        right: 24px;
+        width: 16px;
+        height: 16px;
+        opacity: 0;
+      }
+      .set_pictrue:hover {
+        opacity: 1;
+        transition: 0.3s all;
+      }
+      .state {
+        width: 80px;
+        height: 30px;
+        line-height: 30px;
+        font-size: 16px;
+        border-radius: 15px;
+        color: #fff;
+        background: #3374f3;
+        text-align: center;
+        position: absolute;
+        right: 30px;
+        bottom: 10px;
+      }
     }
   }
+  .el-icon-Set {
+    // font-weight: 700;
+    font-family: "PingFang-SC-Regular,PingFang-SC";
+    margin-right: 5px;
+    background: url("../assets/img/Set.png") center no-repeat;
+    background-size: cover;
+  }
+  .el-icon-Set:before {
+    content: "\66ff";
+    font-size: 16px;
+    visibility: hidden;
+  }
+}
 </style>

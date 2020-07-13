@@ -1,5 +1,11 @@
 <template>
   <div class="gallery">
+    <!-- 头部渠道 -->
+    <el-tabs type="border-card" v-model="activeName">
+      <el-tab-pane v-for="item in channelTab" :key="item.id">
+        <div slot="label">{{item.name}}</div>
+      </el-tab-pane>
+    </el-tabs>
     <div class="pictrue_top">
       <!-- 新增渠道 -->
       <el-button type="primary" @click="isDlag = true" class="new_button">
@@ -7,7 +13,7 @@
         新增渠道
       </el-button>
       <div class="local_up">
-        <span>格式要求&ensp;</span>
+        <span>格式要求：&ensp;</span>
         <el-popover placement="bottom" trigger="hover" content="仅支持png/jpg/jpeg格式">
           <span class="el-icon-Tip" slot="reference"></span>
         </el-popover>
@@ -66,9 +72,12 @@
 </template>
 
 <script>
+import {getChannels} from '@/api/api.js'
 export default {
   data () {
     return {
+      activeName: '0',
+      channelTab: [],
       fileList: [],
       bigSrc: '',
       pageSize: 3,
@@ -183,7 +192,18 @@ export default {
       ]
     }
   },
+  created() {
+this.getChannel()
+  },
   methods: {
+    // 获取渠道
+        async getChannel() {
+      const res = await getChannels();
+      const { code, data } = res.data;
+      if (code === 200) {
+        this.channelTab = data.channelList;
+      }
+    },
     showDialog (src) {
       this.isdialog = true
       this.bigSrc = src
@@ -212,6 +232,14 @@ export default {
   padding: 24px;
   background: #fff;
   width: 1652px;
+  .el-tabs {
+    line-height: 22px;
+    box-shadow: none;
+    border: none;
+    ::v-deep .el-tabs__content {
+      padding: 0;
+    }
+  }
   .pictrue_top {
     display: flex;
     flex-wrap: wrap;

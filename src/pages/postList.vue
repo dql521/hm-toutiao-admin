@@ -1,5 +1,11 @@
 <template>
   <div class="post-list">
+    <!-- 头部渠道 -->
+    <el-tabs type="border-card" v-model="activeName">
+      <el-tab-pane v-for="item in channelTab" :key="item.id">
+        <div slot="label">{{item.name}}</div>
+      </el-tab-pane>
+    </el-tabs>
     <!-- 条件筛选 -->
     <div class="top">
         <span>搜索：</span>
@@ -125,10 +131,12 @@
   </div>
 </template>
 <script>
-import { getPostList } from '../api/api'
+import { getChannels } from '../api/api'
 export default {
   data () {
     return {
+      activeName: '0',
+      channelTab: [],
       postList: [],
       pageSize: 3,
       pageIndex: 1,
@@ -214,9 +222,17 @@ export default {
     }
   },
   created () {
-    this.getPostList()
+    this.getChannel()
   },
   methods: {
+    // 获取渠道
+        async getChannel() {
+      const res = await getChannels();
+      const { code, data } = res.data;
+      if (code === 200) {
+        this.channelTab = data.channelList;
+      }
+    },
     handleEdit (index, row) {
       console.log(index, row)
       dialogFormVisible = true
@@ -289,6 +305,14 @@ export default {
 .post-list {
   padding: 24px;
   background: #fff;
+  .el-tabs {
+    line-height: 22px;
+    box-shadow: none;
+    border: none;
+   ::v-deep .el-tabs__content {
+      padding: 0;
+    }
+  }
   .paging{
     font-size: 16px;
     margin-top: 45px;

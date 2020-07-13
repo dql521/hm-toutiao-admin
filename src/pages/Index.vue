@@ -9,7 +9,7 @@
             <p>总广告数</p>
             <h1>{{total.current}}</h1>
             <span style="margin-right: 20px;">上周：{{total.last}}</span>
-            <span>同比：{{total.rate}}%</span>
+            <span>同比：{{total.rate.toFixed(2)}}%</span>
             <i
             :class="oldTotal < total.rate ? 'el-icon-Asc'  : 'el-icon-Desc' "
             ></i>
@@ -23,7 +23,7 @@
             <p>待上线数量</p>
            <h1>{{topublish.current}}</h1>
             <span style="margin-right: 10px;">上周：{{topublish.last}}</span>
-            <span>同比：{{topublish.rate}}%</span>
+            <span>同比：{{topublish.rate.toFixed(2)}}%</span>
             <i :class="oldTopublish < topublish.rate ? 'el-icon-Asc'  : 'el-icon-Desc' "></i>
           </div>
         </div>
@@ -35,7 +35,7 @@
             <p>上架中数量</p>
             <h1>{{publishing.current}}</h1>
             <span style="margin-right: 10px;">上周：{{publishing.last}}</span>
-            <span>同比：{{publishing.rate}}%</span>
+            <span>同比：{{publishing.rate.toFixed(2)}}%</span>
             <i :class="oldPublishing < publishing.rate ? 'el-icon-Asc'  : 'el-icon-Desc' "></i>
           </div>
         </div>
@@ -47,7 +47,7 @@
             <p>已下架数量</p>
             <h1>{{published.current}}</h1>
             <span style="margin-right: 10px;">上周：{{published.last}}</span>
-            <span>同比：{{published.rate}}%</span>
+            <span>同比：{{published.rate.toFixed(2)}}%</span>
             <i :class="oldPublished < published.rate ? 'el-icon-Asc' : 'el-icon-Desc'"></i>
           </div>
         </div>
@@ -133,7 +133,7 @@ export default {
   display: flex;
   .count_item {
     flex: 1;
-    padding: 0 46px;
+    padding: 0 30px;
     border-right: 2px solid #EFF2F9;
     .item {
       height: 100%;

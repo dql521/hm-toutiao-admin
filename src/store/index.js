@@ -8,7 +8,8 @@ export default new Vuex.Store({
     oldTotal: 0,
     oldPublished: 0,
     oldTPublishing: 0,
-    oldTopublish: 0
+    oldTopublish: 0,
+    channelTab: []
   },
   mutations: {
     SET_oldTotal: (state, active) => {
@@ -22,6 +23,9 @@ export default new Vuex.Store({
     },
     SET_oldTopublish: (state, active) => {
       state.oldTopublish = active
+    },
+    SET_channelTab: (state, active) => {
+      state.channelTab = active
     }
   },
   getters: {

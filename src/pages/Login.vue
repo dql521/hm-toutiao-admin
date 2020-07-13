@@ -74,16 +74,18 @@ export default {
       const res = await login(JSON.stringify(this.form))
       console.log(res)
 
-      const { code, data } = res.data
+      const { code, data, message } = res.data
       // const { status, data } = res
-      if (code === 200) {
+      if (code === 200 || code === 201) {
         this.$message.success('登录成功')
         localStorage.setItem('token', data.token)
         // this.$store.commit('SET_TOKEN', data.token)
         // localStorage.setItem('user', JSON.stringify(data.user))
         this.$router.push('/index')
+      } else if (code === 400 || code === 401 || code === 403 || code ===406 ) {
+        this.$message.error(message)
       } else {
-        this.$message.error('用户名或密码错误')
+        this.$message.error('服务异常，请稍后重试！')
       }
     },
     reset () {
