@@ -6,13 +6,17 @@ import postList from '@/pages/postList.vue'
 import adPublish from '@/pages/adPublish.vue'
 import Index from '@/pages/Index.vue'
 import Gallery from '@/pages/Gallery.vue'
+import noPower from '@/conpments/noPower.vue'
+import noFound from '@/conpments/noFound.vue'
+
 
 Vue.use(VueRouter)
 const router = new VueRouter({
   routes: [
     {
       path: '/',
-      redirect: '/index'
+      redirect: '/login',
+      meta: { title: '线上统一广告—登录' }
     },
     {
       path: '/',
@@ -25,7 +29,25 @@ const router = new VueRouter({
         { path: '/gallery', component: Gallery, name: 'gallery', meta: { title: '线上统一广告—资源库' } }
       ]
     },
-    { path: '/login', component: Login, name: 'login', meta: { title: '线上统一广告—登录' } }
+    {
+      path: '/403',
+    component: noPower,
+    name: '403',
+    meta: { title: '403' }
+    },
+    {
+      path: '/404',
+    component: noFound,
+    name: '404',
+    meta: { title: '404' }
+    },
+    {
+    path: '/login',
+    component: Login,
+    name: 'login',
+    meta: { title: '线上统一广告—登录' }
+    }
+
   ]
 })
 
@@ -36,19 +58,19 @@ VueRouter.prototype.push = function push (location) {
 }
 
 // 导航守卫
-// router.beforeEach((to, from, next) => {
-//   window.document.title = to.meta.title || '线上统一广告平台'
-//   const token = localStorage.getItem('token')
-//   if (token || to.path === '/login') {
-//     next()
-//   } else {
-//     // router.push('/login')
-//     router.replace({
-//       path: '/login',
-//       query: {
-//         redirect: router.currentRoute.fullPath
-//       }
-//     })
-//   }
-// })
+router.beforeEach((to, from, next) => {
+  window.document.title = to.meta.title || '线上统一广告平台'
+  const token = localStorage.getItem('token')
+  if (token || to.path === '/login') {
+    next()
+  } else {
+    // router.push('/login')
+    router.replace({
+      path: '/login',
+      query: {
+        redirect: router.currentRoute.fullPath
+      }
+    })
+  }
+})
 export default router

@@ -1,14 +1,14 @@
 import axios from 'axios'
 // import vue from 'vue'
-import router from '../router/index'
+import router from '@/router/index'
 // import { baseURL } from '../config/env'
 import { Message } from 'element-ui'
-
+import {showLoading, hideLoading} from '@/utils/utils.js'
 const service = axios.create({
   // process.env.NODE_ENV === 'development' 来判断是否开发环境
   // easy-mock服务挂了，暂时不使用了
   baseURL: '',
-  timeout: 10000,
+  timeout: 30000,
   dataType: 'json',
   headers: {
     post: {
@@ -53,8 +53,6 @@ service.interceptors.request.use(
     return config
   },
   error => {
-    console.log(error)
-    Message.error({ message: '请求超时!' })
     return Promise.reject(error)
   }
 )
@@ -62,23 +60,48 @@ service.interceptors.request.use(
 // 响应拦截器
 service.interceptors.response.use(
   response => {
-    // if (response.data.code === 200) {
-    //   return response.data
-    // }
+
     return response
   },
   error => {
-    // if (error.response.data.code === 504 || error.response.data.code === 404 || error.response.data.code === 500) {
-    //   Message.error({ message: '网络异常，请稍后重试' })
-    //   router.push({ name: '404' })
-    // } else if (error.response.data.code === 403) {
-    //   Message.error({ message: '登录已过期，请重新登录' })
-    //   router.push({ name: 'login' })
-    // } else {
-    //   Message.error({ message: '网络异常，请稍后重试' })
-    //   router.push({ name: '404' })
-    // }
-    console.log(error)
+    hideLoading() //取消加载框
+        // 请求超时
+    if (error.code === 'ECONNABORTED' && error.message.indexOf('timeout') !== -1) {
+      Message.error('网络请求超时，请稍后重试')
+    }
+    // 请求异常处理
+    if (error.response.status) {
+      switch (error.response.status) {
+          case 400:
+          Message.error('网络异常，请稍后重试')
+          break;
+          case 401:
+          Message.error('登录超时，请重新登录')
+          router.push({ name: 'login' })
+          break;
+          case 403:
+          Message.error('您暂无权限访问，请联系管理员')
+          router.push({ name: '403' })
+          break;
+          case 404:
+          Message.error('您访问的资源不存在')
+          router.push({ name: '404' })
+          break;
+          case 406:
+          Message.error('请求数据失败，请稍后重试')
+          break;
+          case 410:
+          Message.error('您访问的资源不存在')
+          router.push({ name: '404' })
+          break;
+          case 422:
+          Message.error('请求数据失败，请稍后重试')
+          break;
+          case 500:
+          Message.error('网络异常，请稍后重试')
+          break;
+      }
+    }
     return Promise.reject(error)
   }
 )

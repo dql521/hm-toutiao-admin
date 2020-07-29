@@ -9,9 +9,9 @@
             <p>总广告数</p>
             <h1>{{total.current}}</h1>
             <span style="margin-right: 20px;">上周：{{total.last}}</span>
-            <span>同比：{{total.rate.toFixed(2)}}%</span>
+            <span>同比：{{total.rate}}%</span>
             <i
-            :class="oldTotal < total.rate ? 'el-icon-Asc'  : 'el-icon-Desc' "
+            :class="total.rate > 0 ? 'el-icon-Asc'  : 'el-icon-Desc' "
             ></i>
           </div>
         </div>
@@ -20,11 +20,11 @@
         <div class="item">
           <img src="../assets/img/NotOnline.png" />
           <div class="item_data">
-            <p>待上线数量</p>
+            <p>待上架数量</p>
            <h1>{{topublish.current}}</h1>
             <span style="margin-right: 10px;">上周：{{topublish.last}}</span>
-            <span>同比：{{topublish.rate.toFixed(2)}}%</span>
-            <i :class="oldTopublish < topublish.rate ? 'el-icon-Asc'  : 'el-icon-Desc' "></i>
+            <span>同比：{{topublish.rate}}%</span>
+            <i :class="topublish.rate > 0 ? 'el-icon-Asc'  : 'el-icon-Desc' "></i>
           </div>
         </div>
       </div>
@@ -35,8 +35,8 @@
             <p>上架中数量</p>
             <h1>{{publishing.current}}</h1>
             <span style="margin-right: 10px;">上周：{{publishing.last}}</span>
-            <span>同比：{{publishing.rate.toFixed(2)}}%</span>
-            <i :class="oldPublishing < publishing.rate ? 'el-icon-Asc'  : 'el-icon-Desc' "></i>
+            <span>同比：{{publishing.rate}}%</span>
+            <i :class="publishing.rate > 0 ? 'el-icon-Asc'  : 'el-icon-Desc' "></i>
           </div>
         </div>
       </div>
@@ -47,8 +47,8 @@
             <p>已下架数量</p>
             <h1>{{published.current}}</h1>
             <span style="margin-right: 10px;">上周：{{published.last}}</span>
-            <span>同比：{{published.rate.toFixed(2)}}%</span>
-            <i :class="oldPublished < published.rate ? 'el-icon-Asc' : 'el-icon-Desc'"></i>
+            <span>同比：{{published.rate}}%</span>
+            <i :class="published.rate > 0 ? 'el-icon-Asc' : 'el-icon-Desc'"></i>
           </div>
         </div>
       </div>
@@ -65,7 +65,8 @@
 </template>
 
 <script>
-import { getCountDate } from '../api/api'
+import { getCountDate } from '@/api/api'
+import {showLoading, hideLoading} from '@/utils/utils'
 export default {
   data () {
     return {
@@ -73,10 +74,6 @@ export default {
       published: {}, // 已下架
       publishing: {}, // 上架中
       topublish: {}, // 待上架
-      oldTotal: 0,
-      oldPublished: 0,
-      oldPublishing: 0,
-      oldTopublish: 0,
       shortcutMenuDatas: [
         { img: require('@/assets/img/myPublish.png'), id: 0, path: '/adPublish' },
         { img: require('@/assets/img/LetMeSee.png'), id: 1, path: '/postlist' },
@@ -85,34 +82,25 @@ export default {
     }
   },
   created () {
-    this.getOldRate()
     this.getCountDates()
   },
   mounted () {},
   methods: {
-    // 获取旧的同比数据
-    getOldRate () {
-      const that = this.$store.state
-      this.oldTotal = that.oldTotal
-      this.oldPublished = that.oldPublished
-      this.oldPublishing = that.oldPublishing
-      this.oldTopublish = that.oldTopublish
-    },
     // 获取最新数据
     async getCountDates () {
+      showLoading()
       const res = await getCountDate()
       const { code, data } = res.data
-      if (code === 200) {
-        console.log(data)
-
+      if (code === 200 || code === 201 || code === 202 || code === 204) {
+        hideLoading()
         this.total = data[0].index_count_data_total
         this.published = data[1].index_count_data_published
         this.publishing = data[2].index_count_data_publishing
         this.topublish = data[3].index_count_data_topublish
-        this.$store.commit('SET_oldTotal', this.total.rate)
-        this.$store.commit('SET_oldPublished', this.published.rate)
-        this.$store.commit('SET_oldTPublishing', this.publishing.rate)
-        this.$store.commit('SET_oldTopublish', this.topublish.rate)
+        this.total.rate = this.total.rate.toFixed(2)
+        this.published.rate = this.published.rate.toFixed(2)
+        this.publishing.rate = this.publishing.rate.toFixed(2)
+        this.topublish.rate = this.topublish.rate.toFixed(2)
       }
     }
   }

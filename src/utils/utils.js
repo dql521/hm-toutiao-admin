@@ -1,6 +1,6 @@
 // 公共方法
 import vue from 'vue'
-import { Loading, Message } from 'element-ui'
+import { Loading } from 'element-ui'
 
 // 加载效果
 let loadingCount = 0
@@ -8,7 +8,7 @@ let loading
 // 显示加载
 export const showLoading = () => {
   if (loadingCount === 0) {
-    loading = Loading.service({ target: '.el-main', lock: true, fullscreen: false, text: '拼命加载中......' })
+    loading = Loading.service({ target: '.el-main', lock: true, text: '拼命加载中......' })
   }
   loadingCount++
 }
@@ -21,7 +21,7 @@ export const hideLoading = () => {
   loadingCount--
   if (loadingCount === 0) {
     vue.nextTick(() => { // 以服务的方式调用的 Loading 需要异步关闭
-      loading.close()
+        loading.close()
     })
   }
 }

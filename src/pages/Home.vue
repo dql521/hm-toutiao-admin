@@ -69,16 +69,19 @@ export default {
   },
   created () {
     this.getUserInfo()
+    // if (this.menus === [] || this.userNickName === '') {
+    //   this.menus = localStorage.getItem('user').menus
+    //   this.userNickName = localStorage.getItem('user').userNickName
+    // }
   },
   methods: {
     async getUserInfo () {
       const res = await getUserMenu()
-      // console.log(res)
       const { code, data } = res.data
       if (code === 200) {
         this.menus = data.menus
         this.userNickName = data.userNickName
-        // console.log(res.data)
+        localStorage.setItem('user', JSON.stringify(data))
       }
     },
     async logout () {
@@ -92,6 +95,7 @@ export default {
         })
         localStorage.removeItem('token')
         localStorage.removeItem('user')
+        localStorage.removeItem('isLogin')
         this.$router.push('/login')
       } catch {
         this.$message({

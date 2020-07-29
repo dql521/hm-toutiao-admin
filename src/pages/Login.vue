@@ -41,6 +41,7 @@
 <script>
 // import '../utils/slideBlock.js'
 import { login } from '../api/api'
+import {showLoading, hideLoading} from '@/utils/utils'
 export default {
   // props: {
   //   msg: String
@@ -50,6 +51,15 @@ export default {
       form: {
         userName: '',
         password: ''
+      }
+    }
+  },
+  created() {
+    let that = this
+    document.onkeydown = e => {
+      e = window.event || e
+      if (that.$route.path == '/login' && (e.code == 'enter' || e.code == 'Enter')) {
+        that.login()
       }
     }
   },
@@ -68,30 +78,27 @@ export default {
         this.$message.error('密码不能为空')
         return
       }
-
-      // const res = await this.$axios.post('/login', this.form)
-      // const res = await this.postRequest('/login', this.form)
+      showLoading()
       const res = await login(JSON.stringify(this.form))
-      console.log(res)
-
       const { code, data, message } = res.data
-      // const { status, data } = res
       if (code === 200 || code === 201) {
+        hideLoading()
         this.$message.success('登录成功')
         localStorage.setItem('token', data.token)
-        // this.$store.commit('SET_TOKEN', data.token)
-        // localStorage.setItem('user', JSON.stringify(data.user))
+        localStorage.setItem('isLogin', true)
         this.$router.push('/index')
-      } else if (code === 400 || code === 401 || code === 403 || code ===406 ) {
+      } else if (code === 400 || code === 401 || code === 403 || code === 406) {
+        hideLoading()
         this.$message.error(message)
       } else {
+        hideLoading()
         this.$message.error('服务异常，请稍后重试！')
       }
     },
-    reset () {
-      this.form.username = ''
-      this.form.password = ''
-    }
+    // reset () {
+    //   this.form.username = ''
+    //   this.form.password = ''
+    // }
     // 行为校验（暂未使用）
     // getCaptcha () {
     //   window.Jigsaw.init({
@@ -119,6 +126,7 @@ export default {
 // @import "../utils/slideBlock.css";
 
 .login {
+  
   height: 100%;
   background: url("../assets/img/bj2.png") no-repeat;
   background-size: 100% 100%;
