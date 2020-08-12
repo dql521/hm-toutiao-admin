@@ -32,7 +32,10 @@
     </div>
     <div class="pictrue_content">
       <ul>
-        <li v-for="(item,index) in pictrueList" :key="index">
+        <li v-for="(item,index) in pictrueList"
+        :key="index"
+        :title="imgSize"
+        @mouseover="getImgSize(index)">
           <el-image :src="item.url" fit="fill" lazy>
             <div slot="error" class="image-slot">
         <i class="el-icon-picture-outline"></i>
@@ -76,16 +79,16 @@
 </template>
 
 <script>
-import { getChannels, getPictrueList, removePictrue, addChannels } from "@/api/api.js"
-import {showLoading, hideLoading} from '@/utils/utils.js'
+import { getChannels, getPictrueList, removePictrue, addChannels } from '@/api/api.js'
+import { showLoading, hideLoading } from '@/utils/utils.js'
 
 export default {
-  data() {
+  data () {
     return {
-      activeName: "0",
+      activeName: '0',
       channelTab: [],
       fileList: [],
-      bigSrc: "",
+      bigSrc: '',
       total: 0,
       isDlag: false,
       isdialog: false,
@@ -96,81 +99,87 @@ export default {
       parmas: {
         limit: 18,
         offset: 1,
-        channelId: 7,
+        channelId: '',
         type: 0
       },
-      pictrueList: []
-    };
+      pictrueList: [],
+      imgSize: ''
+    }
   },
-  created() {
-    this.getChannel();
-    this.getPictrueLists();
+  created () {
+    this.getChannel()
+  },
+  mounted () {
+
   },
   methods: {
     // 获取渠道
-    async getChannel() {
-      const res = await getChannels();
-      const { code, data } = res.data;
+    async getChannel () {
+      const res = await getChannels()
+      const { code, data } = res.data
       if (code === 200 || code === 201 || code === 202 || code === 204) {
-        this.channelTab = data.channelList;
+        this.channelTab = data.channelList
+        this.parmas.channelId = this.channelTab[0].id
+        this.getPictrueLists()
       }
     },
-    getChannelId(id) {
-      this.parmas.channelId = id;
-      this.getPictrueLists();
+    getChannelId (id) {
+      this.parmas.channelId = id
+      this.getPictrueLists()
     },
 
-    //查看图片
-    showDialog(src) {
-      this.isdialog = true;
-      this.bigSrc = src;
+    // 查看图片
+    showDialog (src) {
+      this.isdialog = true
+      this.bigSrc = src
     },
-    //获取图片列表
-    async getPictrueLists() {
+    // 获取图片列表
+    async getPictrueLists () {
       showLoading()
       const res = await getPictrueList(this.parmas)
-      const { code, data } = res.data;
+      const { code, data } = res.data
       if (code === 200) {
         hideLoading()
         this.pictrueList = data.list
+        // console.log(this.pictrueList[0].url)
         this.total = data.total
       } else {
         hideLoading()
       }
     },
-    async removePictrues(id) {
+    async removePictrues (id) {
       try {
-        await this.$confirm("确定删除此张图片吗？", "提示", {
-          type: "warning"
-        });
-        const res = await removePictrue({ id: id });
-        const { code, message } = res.data;
+        await this.$confirm('确定删除此张图片吗？', '提示', {
+          type: 'warning'
+        })
+        const res = await removePictrue({ id: id })
+        const { code, message } = res.data
         if (code === 204) {
           this.$message.success(message)
-          this.getPictrueLists();
+          this.getPictrueLists()
         } else {
           this.$message.error(message)
         }
       } catch {
         this.$message({
-          type: "info",
-          message: "已取消操作"
-        });
+          type: 'info',
+          message: '已取消操作'
+        })
       }
     },
     // 上传图片相关
-    handleFileSuc(res, file, fileList) {
-      const { code, message } = res;
+    handleFileSuc (res, file, fileList) {
+      const { code, message } = res
       if (code === 200) {
-        this.$message.success("资源增加成功");
+        this.$message.success('资源增加成功')
         this.fileList = []
-        this.getPictrueLists();
+        this.getPictrueLists()
       } else {
         this.fileList = []
-        this.$message.error(message);
+        this.$message.error(message)
       }
     },
-    beforeAvatarUpload(file) {
+    beforeAvatarUpload (file) {
       var testmsg = /^image\/(jpeg|png|jpg|gif|bmp|tiff|dwg)$/.test(file.type)
       const isLt2M = file.size / 1024 / 1024 < 2
       if (!testmsg) {
@@ -181,22 +190,31 @@ export default {
       }
       return testmsg && isLt2M
     },
-    exceadMsg(){
+    exceadMsg () {
       this.$message.error('已超出最大上传张数')
-      return
     },
-    //分页器
-    handleCurrentChange(val) {
+    // 图片尺寸展示
+    getImgSize (index) {
+      const img = new Image()
+      img.src = this.pictrueList[index].url
+      // console.log(img);
+      img.onload = () => {
+        this.imgSize = `图片尺寸：${img.width}*${img.height}`
+        // console.log(img.width+'*'+img.height);
+      }
+    },
+    // 分页器
+    handleCurrentChange (val) {
       this.parmas.offset = val
       this.getPictrueLists()
     },
-    handleSizeChange(val) {
+    handleSizeChange (val) {
       this.parmas.offset = 1
       this.parmas.limit = val
-      this.getPictrueLists();
+      this.getPictrueLists()
     }
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>
@@ -348,6 +366,6 @@ export default {
     }
   }
   }
- 
+
 }
 </style>

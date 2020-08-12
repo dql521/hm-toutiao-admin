@@ -1,8 +1,8 @@
-// const path = require('path');
+const path = require('path')
 
-// const webpack = require('webpack')
-// const CompressionWebpackPlugin = require('compression-webpack-plugin')
-// const productionGzipExtensions = ['js', 'css']
+const webpack = require('webpack')
+const CompressionWebpackPlugin = require('compression-webpack-plugin')
+const productionGzipExtensions = ['js', 'css']
 console.log(process.env.VUE_APP_HOST);
 module.exports = {
   devServer: {
@@ -14,7 +14,7 @@ module.exports = {
         // 目标服务器地址
         // target: 'http://ad.szrcbank.com/advesy',
         target: process.env.VUE_APP_HOST,
-        changeOrigin: process.env.NODE_ENV=='development' ? true : false, // 开启代理服务器，上线时关闭代理
+        changeOrigin: process.env.NODE_ENV == 'development', // 开启代理服务器，上线时关闭代理
         pathRewrite: {
           //  会将 /dev-api 替换为 '',也就是 /dev-api 会移除，
           // 如 /dev-api/db.json 代理到 https://localhost:8080/db.json
@@ -40,32 +40,32 @@ module.exports = {
   productionSourceMap: false,
   runtimeCompiler: true,
   configureWebpack: config => {
-    config.entry.app = ["babel-polyfill","./src/main.js"]
+    config.entry.app = ['babel-polyfill', './src/main.js']
   },
-  // publicPath: './',
-  // configureWebpack:{
-  //   resolve:{
-  //     alias:{
-  //       '@':path.resolve(__dirname, './src'),
-  //       '@i':path.resolve(__dirname, './src/assets'),
-  //     } 
-  //   },
-  //   plugins: [
-  //     new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
-      
-  //     // 下面是下载的插件的配置
-  //     new CompressionWebpackPlugin({
-  //       algorithm: 'gzip',
-  //       test: new RegExp('\\.(' + productionGzipExtensions.join('|') + ')$'),
-  //       threshold: 10240,
-  //       minRatio: 0.8
-  //     }),
-  //     new webpack.optimize.LimitChunkCountPlugin({
-  //       maxChunks: 5, 
-  //       minChunkSize: 100
-  //     })
-  //   ]
-  // }
+  publicPath: './',
+  configureWebpack: {
+    resolve: {
+      alias: {
+        '@': path.resolve(__dirname, './src'),
+        '@i': path.resolve(__dirname, './src/assets')
+      }
+    },
+    plugins: [
+      new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
+
+      // 下面是下载的插件的配置
+      new CompressionWebpackPlugin({
+        algorithm: 'gzip',
+        test: new RegExp('\\.(' + productionGzipExtensions.join('|') + ')$'),
+        threshold: 10240,
+        minRatio: 0.8
+      }),
+      new webpack.optimize.LimitChunkCountPlugin({
+        maxChunks: 5,
+        minChunkSize: 100
+      })
+    ]
+  }
 
 }
 

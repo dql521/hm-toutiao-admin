@@ -21,7 +21,7 @@ export const hideLoading = () => {
   loadingCount--
   if (loadingCount === 0) {
     vue.nextTick(() => { // 以服务的方式调用的 Loading 需要异步关闭
-        loading.close()
+      loading.close()
     })
   }
 }

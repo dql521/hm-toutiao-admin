@@ -56,11 +56,9 @@ import 'element-ui/lib/theme-chalk/index.css'
 import 'lib-flexible'
 
 const isProduct = process.env.NODE_ENV != 'production'
-console.log(isProduct);
 Vue.config.productionTip = false
 Vue.config.debug = isProduct
 Vue.config.devtools = isProduct
-
 
 Vue.prototype.getRequest = getRequest
 Vue.prototype.postRequest = postRequest

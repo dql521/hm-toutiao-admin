@@ -34,7 +34,11 @@
       <el-table :data="tableData">
         <el-table-column label="名称">
           <template slot-scope="scope" class="ad_name">
-            <span>{{ scope.row.name }}</span>
+            <el-popover trigger="hover" placement="top">
+              <p>名称: {{ scope.row.name }}</p>
+              <div slot="reference" class="name-wrapper">{{ scope.row.name }}</div>
+            </el-popover>
+            <!-- <span>{{ scope.row.name }}</span> -->
           </template>
         </el-table-column>
 
@@ -47,7 +51,7 @@
           </template>
         </el-table-column>
 
-        <el-table-column label="顺序" min-width="40" type="index" :index="indexMethod"></el-table-column>
+        <el-table-column label="顺序" min-width="60" type="index" :index="indexMethod"></el-table-column>
 
         <el-table-column label="类型" min-width="50">
           <template slot="header">
@@ -164,7 +168,7 @@
     </div>
 
     <!-- 查看详情弹框 -->
-    <el-dialog title="广告详情" :visible.sync="showDetails" class="ad_Details" width="504px">yarn 
+    <el-dialog title="广告详情" :visible.sync="showDetails" class="ad_Details" width="504px">
       <el-carousel
         arrow="always"
         trigger="click"
@@ -210,7 +214,7 @@
               <!-- <span>广告图片:&ensp;</span> -->
               广告图片：
             </span>
-            <div class="img_upload">
+            <div class="img_upload" @mouseover="imgSizes" :title="imgSize">
               <el-image :src="editCntParmas.adsUrl" fit="fill"></el-image>
               <div class="set_pictrue">
                 <el-dropdown>
@@ -303,7 +307,10 @@
             </span>
           </div>
           <ul>
-            <li v-for="(item) in pictrueList" :key="item.id">
+            <li v-for="(item, index) in pictrueList"
+            :key="item.id"
+            :title="imgSize"
+            @mouseover="getImgSize(index)">
               <el-checkbox-group v-model="checkList" :max="1" :disabled="isCheckedImg">
                 <el-checkbox :label="item">
                   <el-image :src="item.url" fit="fill" lazy>></el-image>
@@ -333,111 +340,115 @@ import {
   modCnt,
   getCntDetail,
   getPictrueList,
-  getChannelsImg,
-} from "@/api/api";
-import { showLoading, hideLoading } from "@/utils/utils";
+  getChannelsImg
+} from '@/api/api'
+import { showLoading, hideLoading } from '@/utils/utils'
 export default {
-  data() {
+  data () {
     return {
-      activeName: "0",
-      channelTabNum: [], //素材库渠道
+      activeName: '0',
+      channelTabNum: [], // 素材库渠道
       date: [], // 查询时间选择器
-      dates: [], //时间选择器
+      dates: [], // 时间选择器
       channelTab: [], // 渠道列表
       total: 0, // 总页数
-      tableData: [], //表格数据
+      tableData: [], // 表格数据
       showBigImg: false, // 查看图片
       showDetails: false, // 查看广告详情
       isAlterDialog: false, // 修改广告
-      isPictrueDialog: false, //选择图片弹框
+      isPictrueDialog: false, // 选择图片弹框
       isCheckedImg: false, // 是否禁用图片选择
       params: {
-        kw: "",
+        kw: '',
         pageSize: 10,
         pageNumber: 1,
-        timeType: "",
-        startTime: "",
-        endTime: "",
-        channelId: 7,
-      }, //查询参数
+        timeType: '',
+        startTime: '',
+        endTime: '',
+        channelId: ''
+      }, // 查询参数
       detailsListInfo: {
-        name: "",
-        startTime: "",
-        endTime: "",
-        linkUrl: "",
+        name: '',
+        startTime: '',
+        endTime: '',
+        linkUrl: ''
       }, // 详情回显数据
-      detailsList: [], //详情列表
+      detailsList: [], // 详情列表
       editCntParmas: {
-        id: "",
-        name: "", // 广告名称
-        resId: "", // 资源编号
-        startTime: "", // 开始时间
-        endTime: "", // 结束时间
+        id: '',
+        name: '', // 广告名称
+        resId: '', // 资源编号
+        startTime: '', // 开始时间
+        endTime: '', // 结束时间
         linkType: 3, // 跳转类型
-        linkUrl: "", // 跳转地址
-        adsUrl: "",
+        linkUrl: '', // 跳转地址
+        adsUrl: ''
       },
       fileParmas: {
-        channelId: 7,
-        type: 0,
+        channelId: '',
+        type: 0
       }, // 本地上传参数
       fileList: [], // 资源列表
       pictrueList: [], // 图片库资源
       checkList: [],
       headers: {
-        token: localStorage.getItem("token"),
+        token: localStorage.getItem('token')
       }, // 请求token
-    };
+      imgSize: ''
+    }
   },
-  created() {
-    this.getChannel();
-    this.getAdList();
+  created () {
+    this.getChannel()
+  },
+  mounted () {
+
   },
   methods: {
     // 日期选择器选择回调
-    getDate(val) {
+    getDate (val) {
       if (val == null) {
-        this.params.startTime = "";
-        this.params.endTime = "";
+        this.params.startTime = ''
+        this.params.endTime = ''
       } else {
-        this.params.startTime = val[0];
-        this.params.endTime = val[1];
+        this.params.startTime = val[0]
+        this.params.endTime = val[1]
       }
     },
     // 获取渠道
-    async getChannel() {
-      const res = await getChannels();
-      const { code, data } = res.data;
+    async getChannel () {
+      const res = await getChannels()
+      // debugger
+      const { code, data } = res.data
       if (code === 200 || code === 201 || code === 202 || code === 204) {
-        this.channelTab = data.channelList;
+        this.channelTab = data.channelList
+        this.params.channelId = this.channelTab[0].id
+        this.fileParmas.channelId = this.channelTab[0].id
+        this.getAdList()
       }
     },
-    getChannelId(id) {
-      this.params.channelId = id;
-      this.getAdList();
+    getChannelId (id) {
+      this.params.channelId = id
+      this.getAdList()
     },
     // 获取广告列表
-    async getAdList(timeType) {
+    async getAdList (timeType) {
       if (timeType != 0) {
-        this.params.timeType = timeType;
+        this.params.timeType = timeType
       }
-      showLoading();
-      const res = await getAdLists(this.params);
-      const { code, data } = res.data;
+      showLoading()
+      const res = await getAdLists(this.params)
+      const { code, data } = res.data
       if (code === 200) {
-        hideLoading();
-        this.tableData = data.list;
-        console.log(this.tableData);
-        this.total = data.total;
+        hideLoading()
+        this.tableData = data.list
+        this.total = data.total
       } else {
-        hideLoading();
+        hideLoading()
       }
     },
 
     // 修改广告
-    editCnt(index, row) {
-      // console.log(index);
-      // console.log(row);
+    editCnt (index, row) {
       // if (row.state == 1) {
       //   this.$alert("该条广告正在上架中，无法修改！", "提示", {
       //     confirmButtonText: "确定",
@@ -446,182 +457,196 @@ export default {
       //   });
       //   return;
       // }
-
-      // console.log(row);
-      this.dates = [row.start_time + ":00", row.end_time + ":00"];
-      this.editCntParmas.name = row.name;
-      this.editCntParmas.id = row.id;
-      this.editCntParmas.resId = row.resId;
-      this.editCntParmas.linkType = row.linkType;
-      if (row.linUrl == null || row.linkUrl == undefined) {
-        this.editCntParmas.linkUrl = "";
+      this.dates = [row.start_time + ':00', row.end_time + ':00']
+      this.editCntParmas.name = row.name
+      this.editCntParmas.id = row.id
+      this.editCntParmas.resId = row.resId
+      this.editCntParmas.linkType = row.linkType
+      if (row.linkUrl == null || row.linkUrl == undefined) {
+        this.editCntParmas.linkUrl = ''
+      } else {
+        this.editCntParmas.linkUrl = row.linkUrl
       }
-      // this.editCntParmas.linkUrl = row.linkUrl
-      this.editCntParmas.adsUrl = row.url;
-      this.isAlterDialog = true;
+      this.editCntParmas.adsUrl = row.url
+      this.isAlterDialog = true
       // this.editCntParmas.userId = row.userId
     },
-    async handleCnt() {
-      this.editCntParmas.startTime = this.dates[0];
-      this.editCntParmas.endTime = this.dates[1];
-      // console.log(this.editCntParmas);
-      const res = await modCnt(this.editCntParmas);
-      console.log(res);
-      const { code, data, message } = res.data;
+    async handleCnt () {
+      this.editCntParmas.startTime = this.dates[0]
+      this.editCntParmas.endTime = this.dates[1]
+      if (this.editCntParmas.linkType == 1 || this.editCntParmas.linkType == 2) {
+        this.$message.error('请填写链接地址！')
+        return
+      }
+      const res = await modCnt(this.editCntParmas)
+      const { code, data, message } = res.data
       if (code == 200) {
-        this.$message.success(data);
-        this.isAlterDialog = false;
-        this.getAdList();
+        this.$message.success(data)
+        this.isAlterDialog = false
+        this.getAdList()
       } else {
-        this.$message.error(message);
-        this.isAlterDialog = false;
+        this.$message.error(message)
+        this.isAlterDialog = false
       }
     },
 
     // 删除广告
-    async deletCnt(index, row) {
+    async deletCnt (index, row) {
       if (row.state == 1) {
-        this.$message.error("已上架广告暂无法删除！");
-        return;
+        this.$message.error('已上架广告暂无法删除！')
+        return
       }
-      this.$confirm("确定删除此条广告吗？", "提示", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning",
+      this.$confirm('确定删除此条广告吗？', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
       })
         .then(async () => {
-          const res = await delCnt(row.id);
-          const { code, message } = res.data;
+          const res = await delCnt(row.id)
+          const { code, message } = res.data
           if (code == 204) {
-            this.$message.success(message);
-            this.getAdList();
+            this.$message.success(message)
+            this.getAdList()
           } else {
-            this.$message.error(message);
+            this.$message.error(message)
           }
         })
         .catch(() => {
           this.$message({
-            type: "info",
-            message: "已取消操作",
-          });
-        });
+            type: 'info',
+            message: '已取消操作'
+          })
+        })
     },
     // 查看广告详情
-    changeDetail(index, oldIndex) {
-      this.detailsListInfo.name = this.detailsList[index].name;
-      this.detailsListInfo.startTime = this.detailsList[index].startTime;
-      this.detailsListInfo.endTime = this.detailsList[index].endTime;
-      this.detailsListInfo.linkUrl = this.detailsList[index].linkUrl;
-      this.detailsListInfo.state = this.detailsList[index].state;
-      //  console.log(this.detailsListInfo.info);
+    changeDetail (index, oldIndex) {
+      this.detailsListInfo.name = this.detailsList[index].name
+      this.detailsListInfo.startTime = this.detailsList[index].startTime
+      this.detailsListInfo.endTime = this.detailsList[index].endTime
+      this.detailsListInfo.linkUrl = this.detailsList[index].linkUrl
+      this.detailsListInfo.state = this.detailsList[index].state
     },
-    async getCntDetails(index, row) {
-      this.showDetails = true;
-      const res = await getCntDetail(row.id);
-      console.log(res.data);
-      const { code, data } = res.data;
+    async getCntDetails (index, row) {
+      this.showDetails = true
+      const res = await getCntDetail(row.id)
+      const { code, data } = res.data
       if (code == 200) {
-        this.detailsList = data;
-        // console.log(this.detailsList)
-        this.detailsListInfo.name = this.detailsList[0].name;
-        this.detailsListInfo.startTime = this.detailsList[0].startTime;
-        this.detailsListInfo.endTime = this.detailsList[0].endTime;
-        this.detailsListInfo.linkUrl = this.detailsList[0].linkUrl;
-        this.detailsListInfo.state = this.detailsList[0].state;
+        this.detailsList = data
+        this.detailsListInfo.name = this.detailsList[0].name
+        this.detailsListInfo.startTime = this.detailsList[0].startTime
+        this.detailsListInfo.endTime = this.detailsList[0].endTime
+        this.detailsListInfo.linkUrl = this.detailsList[0].linkUrl
+        this.detailsListInfo.state = this.detailsList[0].state
       } else {
-        this.$message.error(message);
+        this.$message.error(message)
       }
     },
 
     // 分页器
-    handleCurrentChange(val) {
-      this.params.pageNumber = val;
-      this.getAdList();
+    handleCurrentChange (val) {
+      this.params.pageNumber = val
+      this.getAdList()
     },
-    handleSizeChange(val) {
-      this.params.pageNumber = 1;
-      this.params.pageSize = val;
-      this.getAdList();
+    handleSizeChange (val) {
+      this.params.pageNumber = 1
+      this.params.pageSize = val
+      this.getAdList()
     },
     // 排序
-    indexMethod(index) {
-      return this.params.pageSize * (this.params.pageNumber - 1) + index + 1;
+    indexMethod (index) {
+      return this.params.pageSize * (this.params.pageNumber - 1) + index + 1
     },
     // 条件筛选
-    filterType(type) {
+    filterType (type) {
       this.tableData = this.tableData.filter((item) => {
-        return item.adsType == type;
-      });
+        return item.adsType == type
+      })
     },
-    filterState(state) {
+    filterState (state) {
       this.tableData = this.tableData.filter((item) => {
-        return item.state == state;
-      });
+        return item.state == state
+      })
     },
 
     // 上传相关
     // 获取图片库资源
-    async getPics() {
-      this.isPictrueDialog = true;
-      const res = await getChannelsImg();
-      const { code, data } = res.data;
+    async getPics () {
+      this.isPictrueDialog = true
+      const res = await getChannelsImg()
+      const { code, data } = res.data
       if (code === 200) {
-        this.channelTabNum = data.channelList;
+        this.channelTabNum = data.channelList
       }
       this.getImgList(
         this.channelTabNum[0].id,
         this.channelTabNum[0].resourceNum
-      );
+      )
     },
-    async getImgList(id, resNum) {
-      this.fileParmas.channelId = id;
+    async getImgList (id, resNum) {
+      this.fileParmas.channelId = id
       const res = await getPictrueList({
         limit: resNum,
         offset: 1,
-        channelId: id,
-      });
-      const { code, data } = res.data;
+        channelId: id
+      })
+      const { code, data } = res.data
       if (code === 200) {
-        this.pictrueList = data.list;
-        console.log(this.pictrueList);
+        this.pictrueList = data.list
       }
     },
-    fileSuc(res, file, fileList) {
-      const { code, message } = res;
+    fileSuc (res, file, fileList) {
+      const { code, message } = res
       if (code === 200) {
-        this.$message.success("资源增加成功")
+        this.$message.success('资源增加成功')
         this.fileList = []
-        this.getPics();
+        this.getPics()
       } else {
         this.fileList = []
-        this.$message.error(message);
+        this.$message.error(message)
       }
     },
-    beforeUpload(file) {
-      var testmsg = /^image\/(jpeg|png|jpg|gif|bmp|tiff|dwg)$/.test(file.type);
-      const isLt2M = file.size / 1024 / 1024 < 2;
+    beforeUpload (file) {
+      var testmsg = /^image\/(jpeg|png|jpg|gif|bmp|tiff|dwg)$/.test(file.type)
+      const isLt2M = file.size / 1024 / 1024 < 2
       if (!testmsg) {
-        this.$message.error("请上传jpeg/png/jpg/gif/bmp/tiff/dwg格式文件!");
+        this.$message.error('请上传jpeg/png/jpg/gif/bmp/tiff/dwg格式文件!')
       }
       if (!isLt2M) {
-        this.$message.error("上传图片大小不能超过 2MB!");
+        this.$message.error('上传图片大小不能超过 2MB!')
       }
-      return testmsg && isLt2M;
+      return testmsg && isLt2M
     },
-    addCheckImg() {
-      const { id, url, userId } = this.checkList[0];
-      this.editCntParmas.resId = id;
-      this.editCntParmas.adsUrl = url;
-      this.editCntParmas.userId = userId;
-      this.checkList = [];
-      this.isPictrueDialog = false;
+    addCheckImg () {
+      const { id, url, userId } = this.checkList[0]
+      this.editCntParmas.resId = id
+      this.editCntParmas.adsUrl = url
+      this.editCntParmas.userId = userId
+      this.checkList = []
+      this.isPictrueDialog = false
     },
-    exceedMsg() {
-      this.$message.error("已超出最大上传张数");
-      return;
+    exceedMsg () {
+      this.$message.error('已超出最大上传张数')
     },
-  },
-};
+    getImgSize (index) {
+      const img = new Image()
+      img.src = this.pictrueList[index].url
+      // console.log(img);
+      img.onload = () => {
+        this.imgSize = `图片尺寸：${img.width}*${img.height}`
+        // console.log(img.width+'*'+img.height);
+      }
+    },
+    imgSizes () {
+      const img = new Image()
+      img.src = this.editCntParmas.adsUrl
+      // console.log(img);
+      img.onload = () => {
+        this.imgSize = `图片尺寸：${img.width}*${img.height}`
+        // console.log(img.width+'*'+img.height);
+      }
+    }
+  }
+}
 </script>
 
 <style lang="scss" scoped>
@@ -657,6 +682,16 @@ export default {
     ::v-deep .el-table__header,
     ::v-deep .el-table__header .has-gutter th {
       background: #eff2f9;
+    }
+    ::v-deep .cell{
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+// text-align: center;
+// margin: auto;
+&:nth-of-type(3){
+  text-align: center;
+}
     }
     ::v-deep .el-dropdown {
       color: #909399;

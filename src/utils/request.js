@@ -3,7 +3,7 @@ import axios from 'axios'
 import router from '@/router/index'
 // import { baseURL } from '../config/env'
 import { Message } from 'element-ui'
-import {showLoading, hideLoading} from '@/utils/utils.js'
+import { showLoading, hideLoading } from '@/utils/utils.js'
 const service = axios.create({
   // process.env.NODE_ENV === 'development' 来判断是否开发环境
   // easy-mock服务挂了，暂时不使用了
@@ -60,46 +60,45 @@ service.interceptors.request.use(
 // 响应拦截器
 service.interceptors.response.use(
   response => {
-
     return response
   },
   error => {
-    hideLoading() //取消加载框
-        // 请求超时
+    hideLoading() // 取消加载框
+    // 请求超时
     if (error.code === 'ECONNABORTED' && error.message.indexOf('timeout') !== -1) {
       Message.error('网络请求超时，请稍后重试')
     }
     // 请求异常处理
     if (error.response.status) {
       switch (error.response.status) {
-          case 400:
+        case 400:
           Message.error('网络异常，请稍后重试')
-          break;
-          case 401:
+          break
+        case 401:
           Message.error('登录超时，请重新登录')
           router.push({ name: 'login' })
-          break;
-          case 403:
+          break
+        case 403:
           Message.error('您暂无权限访问，请联系管理员')
           router.push({ name: '403' })
-          break;
-          case 404:
+          break
+        case 404:
           Message.error('您访问的资源不存在')
           router.push({ name: '404' })
-          break;
-          case 406:
+          break
+        case 406:
           Message.error('请求数据失败，请稍后重试')
-          break;
-          case 410:
+          break
+        case 410:
           Message.error('您访问的资源不存在')
           router.push({ name: '404' })
-          break;
-          case 422:
+          break
+        case 422:
           Message.error('请求数据失败，请稍后重试')
-          break;
-          case 500:
+          break
+        case 500:
           Message.error('网络异常，请稍后重试')
-          break;
+          break
       }
     }
     return Promise.reject(error)

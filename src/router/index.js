@@ -9,7 +9,6 @@ import Gallery from '@/pages/Gallery.vue'
 import noPower from '@/conpments/noPower.vue'
 import noFound from '@/conpments/noFound.vue'
 
-
 Vue.use(VueRouter)
 const router = new VueRouter({
   routes: [
@@ -31,21 +30,21 @@ const router = new VueRouter({
     },
     {
       path: '/403',
-    component: noPower,
-    name: '403',
-    meta: { title: '403' }
+      component: noPower,
+      name: '403',
+      meta: { title: '403' }
     },
     {
       path: '/404',
-    component: noFound,
-    name: '404',
-    meta: { title: '404' }
+      component: noFound,
+      name: '404',
+      meta: { title: '404' }
     },
     {
-    path: '/login',
-    component: Login,
-    name: 'login',
-    meta: { title: '线上统一广告—登录' }
+      path: '/login',
+      component: Login,
+      name: 'login',
+      meta: { title: '线上统一广告—登录' }
     }
 
   ]

@@ -66,7 +66,7 @@
 
 <script>
 import { getCountDate } from '@/api/api'
-import {showLoading, hideLoading} from '@/utils/utils'
+import { showLoading, hideLoading } from '@/utils/utils'
 export default {
   data () {
     return {

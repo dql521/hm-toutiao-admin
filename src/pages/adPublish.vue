@@ -45,14 +45,22 @@
                 </el-dropdown-item>
               </el-dropdown-menu>
             </el-dropdown>
-            <el-dropdown placement="bottom">
+            <el-dropdown placement="bottom" :hide-on-click="false">
               <span class="el-dropdown-link" style="padding: 0 26px;">
                 <i class="el-icon-CreateModule"></i>
               </span>
-              <el-dropdown-menu slot="dropdown">
+              <el-dropdown-menu slot="dropdown" :hide-on-click="false">
                 <el-dropdown-item @click.native="addCildModule(0)">新建主模块</el-dropdown-item>
               </el-dropdown-menu>
             </el-dropdown>
+            <!-- <el-dropdown placement="bottom" style="padding-right: 26px;" :hide-on-click="false">
+              <span class="el-dropdown-link">
+                <i class="el-icon-refresh" style="color: #409EFF; font-weight: 900;"></i>
+              </span>
+              <el-dropdown-menu slot="dropdown">
+                <el-dropdown-item>更新</el-dropdown-item>
+              </el-dropdown-menu>
+            </el-dropdown> -->
           </div>
         </div>
         <div class="tree_content">
@@ -105,7 +113,8 @@
       <div class="module_form">
         <div class="no_ad" v-if="active == 0">
           <img src="../assets/img/NA.png" />
-          <p>您还没有选择子栏位，无法发布广告</p>
+          <!-- <p v-if="">您还没有创建子栏位，无法发布广告</p> -->
+          <p>您还没有创建/选择子栏位，无法发布广告</p>
         </div>
         <div class="form_data" v-if="active == 1 || active == 2">
           <div class="form_title">
@@ -419,7 +428,10 @@
             </span>
           </div>
           <ul>
-            <li v-for="(item) in pictrueList" :key="item.id">
+            <li v-for="(item, index) in pictrueList"
+            :key="item.id"
+            :title="imgSize"
+            @mouseover="getImgSize(index)">
               <el-checkbox-group v-model="checkList" :max="modules.adsNum">
                 <el-checkbox :label="item">
                   <el-image :src="item.url" fit="fill" lazy>></el-image>
@@ -468,7 +480,7 @@
 </template>
 
 <script>
-import { VueEditor } from "vue2-editor";
+import { VueEditor } from 'vue2-editor'
 import {
   addChannels,
   getChannels,
@@ -482,14 +494,14 @@ import {
   delModule,
   getCntInfo,
   editModuleCild,
-  getModuleCild,
-} from "@/api/api";
-import { showLoading, hideLoading } from "@/utils/utils.js";
+  getModuleCild
+} from '@/api/api'
+import { showLoading, hideLoading } from '@/utils/utils.js'
 export default {
   components: {
-    VueEditor,
+    VueEditor
   },
-  data() {
+  data () {
     return {
       dates: [], // 投放时间
       active: 0, // 步骤条
@@ -499,9 +511,9 @@ export default {
       alterIndex: 0,
       oldIndex: 0,
       attrType: 0, // 修改属性类型
-      activeName: "0", // tab绑定值
+      activeName: '0', // tab绑定值
       channelTab: [], // 渠道
-      channelTabNum: [], //素材库渠道
+      channelTabNum: [], // 素材库渠道
       isDlag: false, // 新增渠道弹框
       isModuleDlag: false, // 新增主模块弹框
       isCildModuleDlag: false, // 新增子模块
@@ -510,107 +522,105 @@ export default {
       isPictrueDialog: false, // 图片选择弹框
       showBigImg: false, // 查看大图弹框
       showDetails: false, // 查看详情
-      isStatus: false, //编辑信息标识
+      isStatus: false, // 编辑信息标识
       showFile: true, // 上传列表回显
       imgWSize: 800, // 图片尺寸宽
       imgHSize: 600, // 图片尺寸高
-      filterText: "", // 树状结构过滤
+      filterText: '', // 树状结构过滤
       expandAll: false, // 是否展开
       rules: {
         name: [
           {
             required: true,
-            message: "名称不能为空",
-            trigger: ["blur", "change"],
+            message: '名称不能为空',
+            trigger: ['blur', 'change']
           },
           {
             // min: 2,
             max: 8,
-            message: "请将内容控制在 8 个字符以内！",
-            trigger: ["blur", "change"],
-          },
-        ],
+            message: '请将内容控制在 8 个字符以内！',
+            trigger: ['blur', 'change']
+          }
+        ]
       }, // 表单校验
       oneModules: {
-        name: "",
-        netType: 0,
+        name: '',
+        netType: 0
       }, // 主模块
       modules: {
         id: null,
         parentId: 0,
-        channelId: 7,
-        name: "",
+        channelId: '',
+        name: '',
         type: 0,
-        positionSize: "",
+        positionSize: '',
         adsType: 0,
-        adsNum: "",
-        resourceId: null,
-      }, //模块新增修改
+        adsNum: '',
+        resourceId: null
+      }, // 模块新增修改
       moduleData: [], // 树形菜单
       headers: {
-        token: localStorage.getItem("token"),
+        token: localStorage.getItem('token')
       }, // 请求token
       fileList: [], // 资源列表
       pictrueList: [], // 图片库资源
       addCntFrom: [],
       addCntParmas: {
-        name: "", // 广告名称
-        positionId: "", // 广告位编号
-        resId: "", // 资源编号
+        name: '', // 广告名称
+        positionId: '', // 广告位编号
+        resId: '', // 资源编号
         linkType: 3, // 跳转类型
-        linkUrl: "", // 跳转地址
-        startTime: "", // 开始时间
-        endTime: "", // 结束时间
+        linkUrl: '', // 跳转地址
+        startTime: '', // 开始时间
+        endTime: '' // 结束时间
       },
       fileParmas: {
-        channelId: 7,
-        type: 0,
+        channelId: '',
+        type: 0
       }, // 本地上传参数
       echoList: [],
       checkList: [],
-      bigSrc: "",
+      bigSrc: '',
       detailsList: [], // 详情列表
       detailsListInfo: {
-        name: "",
-        startTime: "",
-        endTime: "",
-        linkUrl: "",
-        state: "",
+        name: '',
+        startTime: '',
+        endTime: '',
+        linkUrl: '',
+        state: ''
       },
       detailParmas: {
-        positionId: "",
-        id: "",
+        positionId: '',
+        id: ''
       },
-    };
+      imgSize: ''
+    }
   },
-  created() {
-    this.getChannel();
-    this.getModule();
+  created () {
+    this.getChannel()
   },
   computed: {
-    disabled() {
-      return this.offset > this.pages;
-    },
+    disabled () {
+      return this.offset > this.pages
+    }
   },
   methods: {
     // 暂未开通功能统一提示
-    notOpen() {
-      this.$message.error("该功能暂未开通，请选择其他操作！");
+    notOpen () {
+      this.$message.error('该功能暂未开通，请选择其他操作！')
     },
     // 树状结构节点过滤
-    filterNode(value, data) {
-      if (!value) return true;
-      return data.text.indexOf(value) !== -1;
+    filterNode (value, data) {
+      if (!value) return true
+      return data.text.indexOf(value) !== -1
     },
     // 图片上传相关
-    exceedMsg() {
-      this.$message.error("已超出最大上传张数");
-      return;
+    exceedMsg () {
+      this.$message.error('已超出最大上传张数')
     },
     // setPositionSize(file) {
     //   this.modules.positionSize = `${this.imgWSize}_${this.imgHSize}`;
     //   var testmsg = /^image\/(jpeg|png|jpg|gif|bmp|tiff|dwg)$/.test(file.type);
-    //   // console.log(file);
     //   const isLt2M = file.size / 1024 / 1024 < 2;
     //   if (!testmsg) {
     //     this.$message.error("请上传jpeg/png/jpg/gif/bmp/tiff/dwg格式文件!");
@@ -620,198 +630,202 @@ export default {
     //   }
     //   return testmsg && isLt2M;
     // },
-    handleFileSuc(res, file, fileList) {
-      const { code, data, message } = res;
+    handleFileSuc (res, file, fileList) {
+      const { code, data, message } = res
       if (code === 200) {
-        this.modules.resourceId = data.resourceId;
-        this.showFile = true;
+        this.modules.resourceId = data.resourceId
+        this.showFile = true
       } else {
-        this.$message.error(message);
-        this.showFile = false;
-        this.fileList = [];
+        this.$message.error(message)
+        this.showFile = false
+        this.fileList = []
       }
     },
-    handleFileErr(err, file, fileList) {
-      this.$message.error("文件上传失败");
+    handleFileErr (err, file, fileList) {
+      this.$message.error('文件上传失败')
     },
 
     // 获取渠道
-    async getChannel() {
-      showLoading();
-      const res = await getChannels();
-      const { code, data, message } = res.data;
+    async getChannel () {
+      showLoading()
+      const res = await getChannels()
+      const { code, data, message } = res.data
       if (code === 200 || code === 201 || code === 202 || code === 204) {
-        this.channelTab = data.channelList;
-        hideLoading();
+        this.channelTab = data.channelList
+        this.modules.channelId = this.channelTab[0].id
+        this.fileParmas.channelId = this.channelTab[0].id
+        this.getModule()
+        // console.log(this.channelTab);
+        hideLoading()
       } else {
-        hideLoading();
-        this.$message.error(message);
+        hideLoading()
+        this.$message.error(message)
       }
     },
     // 增加渠道
-    async addChannel() {
-      if (this.oneModules.name == "") {
-        this.$message.error("渠道名称不能为空");
-        return;
+    async addChannel () {
+      if (this.oneModules.name == '') {
+        this.$message.error('渠道名称不能为空')
+        return
       }
-      const res = await addChannels(this.oneModules);
-      const { code, message } = res.data;
+      const res = await addChannels(this.oneModules)
+      const { code, message } = res.data
       if (code === 200 || code === 201 || code === 202 || code === 204) {
-        this.isDlag = false;
-        this.$message.success(message);
-        this.oneModules.name = "";
-        this.getChannel();
+        this.isDlag = false
+        this.$message.success(message)
+        this.oneModules.name = ''
+        this.getChannel()
       } else {
-        this.$message.error(message);
-        this.oneModules.name = "";
+        this.$message.error(message)
+        this.oneModules.name = ''
       }
     },
 
     // 获取模块数据
-    async getModule() {
-      const res = await getModule({ channelId: this.modules.channelId });
-      const { code, data } = res.data;
+    async getModule () {
+      const res = await getModule({ channelId: this.modules.channelId })
+      const { code, data } = res.data
       if (code === 200 || code === 201 || code === 202 || code === 204) {
-        const { positionTree } = data;
-        // console.log(data);
-        this.moduleData = positionTree;
+        const { positionTree } = data
+        this.moduleData = positionTree
       }
     },
     // 添加模块
-    addCildModule(id) {
-      this.isModuleDlag = true;
+    addCildModule (id) {
+      this.isModuleDlag = true
       if (id === 0) {
-        this.modules.parentId = 0;
-        this.modules.type = 0;
+        this.modules.parentId = 0
+        this.modules.type = 0
       } else {
-        this.isCildModuleDlag = true;
-        this.modules.parentId = id;
-        this.modules.type = 0;
+        this.isCildModuleDlag = true
+        this.modules.parentId = id
+        this.modules.type = 0
       }
     },
-    async moduleAdd() {
-      if (this.modules.name === "") {
+    async moduleAdd () {
+      if (this.modules.name === '') {
         // this.$message.error("模块名称不能为空");
         return
       }
-      if (this.modules.name.length >8) {
+      if (this.modules.name.length > 8) {
         return
       }
 
-      const res = await addModule(this.modules);
-      const { code, message } = res.data;
+      const res = await addModule(this.modules)
+      const { code, message } = res.data
       if (code === 200 || code === 201 || code === 202 || code === 204) {
-        (this.isModuleDlag = false) || (this.isCildModuleDlag = false);
-        this.$message.success(message);
-        this.modules.name = "";
-        this.getModule();
+        (this.isModuleDlag = false) || (this.isCildModuleDlag = false)
+        this.$message.success(message)
+        this.modules.name = ''
+        this.getModule()
       } else {
-        this.$message.error(message);
-        this.modules.name = "";
+        this.$message.error(message)
+        this.modules.name = ''
       }
     },
     // 删除模块/子栏位
-    async delModules(id) {
-      const res = await delModule(id);
-      //  console.log(res);
-      const { code, message } = res.data;
+    async delModules (id) {
+      const res = await delModule(id)
+      const { code, message } = res.data
       if (code === 200 || code === 204) {
-        this.$message.success(message);
-        this.getModule();
+        this.$message.success(message)
+        this.getModule()
       } else {
-        this.$message.error(message);
+        this.$message.error(message)
       }
     },
 
-    getChannelId(id) {
-      this.modules.channelId = id;
+    getChannelId (id) {
+      this.modules.channelId = id
       this.active = 0
-      this.getModule();
+      this.getModule()
     },
     // 获取修改模块参数
-    getAlterModule(data) {
-      this.modules.type = data.attributes.type;
-      this.modules.id = data.id;
+    getAlterModule (data) {
+      this.modules.type = data.attributes.type
+      this.modules.id = data.id
       if (data.attributes.type == 0) {
-        this.modules.name = data.text;
-        this.modules.parentId = data.parentId;
+        this.modules.name = data.text
+        this.modules.parentId = data.parentId
       } else {
-        this.getModuleCildInfo();
+        this.getModuleCildInfo()
       }
-      this.isAlterDlag = true;
+      this.isAlterDlag = true
     },
     // 查询子栏位信息
-    async getModuleCildInfo() {
-      const res = await getModuleCild({ id: this.modules.id });
-      // console.log(res.data);
-      const { code, data, message } = res.data;
+    async getModuleCildInfo () {
+      const res = await getModuleCild({ id: this.modules.id })
+      const { code, data, message } = res.data
       if (code == 200) {
-        this.modules.name = data.adsPosition.name;
-        this.modules.parentId = data.adsPosition.parentId;
+        this.modules.name = data.adsPosition.name
+        this.modules.parentId = data.adsPosition.parentId
         // this.modules.id = data.adsPosition.id
         //  this.modules.type = data.positionSize.type
-        this.imgWSize = data.adsPosition.positionSize.split("_")[0];
-        this.imgHSize = data.adsPosition.positionSize.split("_")[1];
-        this.modules.adsNum = data.adsPosition.adsNum;
-        this.modules.adsType = data.adsPosition.adsType;
-        this.modules.resourceId = data.adsContent.resId;
+        this.imgWSize = data.adsPosition.positionSize.split('_')[0]
+        this.imgHSize = data.adsPosition.positionSize.split('_')[1]
+        this.modules.adsNum = data.adsPosition.adsNum
+        this.modules.adsType = data.adsPosition.adsType
+        this.modules.resourceId = data.adsContent.resId
       }
     },
     // 修改模块名称
-    async alterModule() {
+    async alterModule () {
       if (this.modules.type == 0) {
-        if (this.modules.name == "") {
+        if (this.modules.name == '') {
           // this.$message.error("属性名称不能为空");
-          return;
+          return
         }
         if (this.modules.name.length > 8) {
-          return;
+          return
         }
-        const res = await alterModule(this.modules);
-        const { code, message } = res.data;
+        const res = await alterModule(this.modules)
+        const { code, message } = res.data
         if (code === 200 || code === 201 || code === 202 || code === 204) {
-          this.isAlterDlag = false;
-          this.$message.success(message);
-          this.getModule();
+          this.isAlterDlag = false
+          this.$message.success(message)
+          this.getModule()
         } else {
-          this.$message.error(message);
+          this.$message.error(message)
         }
       } else {
-        if (this.modules.name === "") {
+        if (this.modules.name === '') {
           // this.$message.error("子栏位名称不能为空");
-          return;
+          return
         }
         if (this.modules.adsType == 0 && this.modules.adsNum > 1) {
-          this.$message.error("请选择正确的广告图片数");
-          return;
+          this.$message.error('请选择正确的广告图片数')
+          return
+        }
+        if (this.modules.adsNum == null || this.modules.adsNum == '') {
+          this.$message.error('请选择广告图片数')
+          return
         }
         if (!this.imgWSize && !this.imgHSize) {
-          this.$message.error("图片尺寸不能为空");
-          return;
+          this.$message.error('图片尺寸不能为空')
+          return
         }
         // this.setPositionSize();
-        this.modules.positionSize = `${this.imgWSize}_${this.imgHSize}`;
-        const res = await editModuleCild(this.modules);
-        const { code, data, message } = res.data;
+        this.modules.positionSize = `${this.imgWSize}_${this.imgHSize}`
+        const res = await editModuleCild(this.modules)
+        const { code, data, message } = res.data
         if (code == 201) {
-          this.getModule();
-          this.$message.success(message);
-          this.isAlterDlag = false;
+          this.getModule()
+          this.$message.success(message)
+          this.isAlterDlag = false
         } else {
-          this.$message.error(message);
+          this.$message.error(message)
         }
-        // console.log(res)
       }
     },
 
     // 获取子栏位参数
-    getModulesCild(id) {
-      this.isAddModuleCild = true;
-      this.modules.parentId = id;
+    getModulesCild (id) {
+      this.isAddModuleCild = true
+      this.modules.parentId = id
     },
     // 增加子栏位
-    async addModuleCild() {
-      if (this.modules.name == "") {
+    async addModuleCild () {
+      if (this.modules.name == '') {
         // this.$message.error("子栏位名称不能为空");
         return
       }
@@ -819,162 +833,158 @@ export default {
         return
       }
       if (this.modules.adsType == 0 && this.modules.adsNum > 1) {
-        this.$message.error("请选择正确的广告图片数");
-        return;
+        this.$message.error('请选择正确的广告图片数')
+        return
+      }
+      if (this.modules.adsNum == null || this.modules.adsNum == '') {
+        this.$message.error('请选择广告图片数')
+        return
       }
       if (!this.imgWSize && !this.imgHSize) {
-        this.$message.error("图片尺寸不能为空");
-        return;
+        this.$message.error('图片尺寸不能为空')
+        return
       }
       if (!this.fileList) {
-        this.$message.error("必须上传1张默认图");
-        return;
+        this.$message.error('必须上传1张默认图')
+        return
       }
-      this.modules.type = 1;
-      this.modules.positionSize = `${this.imgWSize}_${this.imgHSize}`;
-      const res = await addModuleCild(this.modules);
-      const { code, message } = res.data;
+      this.modules.type = 1
+      this.modules.positionSize = `${this.imgWSize}_${this.imgHSize}`
+      const res = await addModuleCild(this.modules)
+      const { code, message } = res.data
       if (code === 200 || code === 201 || code === 202 || code === 204) {
-        this.$message.success(message);
-        this.isAddModuleCild = false;
-        this.fileList = [];
-        this.modules.name = "";
-        this.getModule();
+        this.$message.success(message)
+        this.isAddModuleCild = false
+        this.fileList = []
+        this.modules.name = ''
+        this.getModule()
       } else {
-        this.$message.error(message);
-        this.fileList = [];
-        this.modules.name = "";
+        this.$message.error(message)
+        this.fileList = []
+        // this.modules.name = "";
       }
     },
 
     // 发布广告相关
     // 获取广告位信息
-    getModuleInfo(data, node, that) {
+    getModuleInfo (data, node, that) {
       if (data.attributes.type == 1) {
-        // console.log(node);
-        this.active = 1;
-        this.addCntParmas.positionId = data.id;
-        this.modules.adsType = data.attributes.adsType;
-        this.modules.adsNum = data.attributes.adsNum;
-        this.modules.positionSize = data.attributes.size.replace("_", "*");
-        // console.log(this.modules.adsNum)
-        this.echoList = [];
+        this.active = 1
+        this.addCntParmas.positionId = data.id
+        this.modules.adsType = data.attributes.adsType
+        this.modules.adsNum = data.attributes.adsNum
+        this.modules.positionSize = data.attributes.size.replace('_', '*')
+        this.echoList = []
         this.checkList = [];
-        (this.addCntParmas.name = ""),
-          (this.addCntParmas.resId = ""),
-          (this.addCntParmas.linkType = 3),
-          (this.addCntParmas.linkUrl = ""),
-          (this.dates = []);
+        (this.addCntParmas.name = ''),
+        (this.addCntParmas.resId = ''),
+        (this.addCntParmas.linkType = 3),
+        (this.addCntParmas.linkUrl = ''),
+        (this.dates = [])
       } else {
-        this.active = 0;
+        this.active = 0
       }
     },
     // 选择图片
-    chackImg() {
+    chackImg () {
       if (this.echoList.length >= this.modules.adsNum) {
-        this.$message.error(`图片总数量不得大于${this.modules.adsNum}张`);
-        return;
+        this.$message.error(`图片总数量不得大于${this.modules.adsNum}张`)
+        return
       }
-      this.isPictrueDialog = true;
-      this.isnub = 0;
-      this.getPics();
+      this.isPictrueDialog = true
+      this.isnub = 0
+      this.getPics()
     },
     // 获取替换index和判断码
-    alterImg(index) {
-      this.isPictrueDialog = true;
-      this.alterIndex = index;
-      this.isnub = 1;
+    alterImg (index) {
+      this.isPictrueDialog = true
+      this.alterIndex = index
+      this.isnub = 1
     },
     // 替换/添加图片
-    addCheckImg() {
+    addCheckImg () {
       if (this.isnub == 1) {
         if (this.checkList.length > 1) {
-          this.$message.error("请选择一张替换图片！");
-          return;
+          this.$message.error('请选择一张替换图片！')
+          return
         }
-        // console.log(this.checkList)
-        this.echoList[this.alterIndex].url = this.checkList[0].url;
-        this.addCntFrom[this.alterIndex].resId = this.checkList[0].id;
-        this.checkList = [];
-        this.isPictrueDialog = false;
+        this.echoList[this.alterIndex].url = this.checkList[0].url
+        this.addCntFrom[this.alterIndex].resId = this.checkList[0].id
+        this.checkList = []
+        this.isPictrueDialog = false
       } else {
         if (
           this.checkList.length + this.echoList.length >
           this.modules.adsNum
         ) {
-          this.$message.error(`图片总数量不得大于${this.modules.adsNum}张`);
-          return;
+          this.$message.error(`图片总数量不得大于${this.modules.adsNum}张`)
+          return
         }
-        this.echoList = [...this.echoList, ...this.checkList];
-        console.log(this.echoList);
-        this.checkList = [];
-        this.active = 2;
+        this.echoList = [...this.echoList, ...this.checkList]
+        this.checkList = []
+        this.active = 2
         for (let i = 0; i < this.echoList.length; i++) {
           this.addCntFrom.splice(i, 1, {
-            name: "",
-            positionId: "",
-            resId: "",
+            name: '',
+            positionId: '',
+            resId: '',
             linkType: 3,
-            linkUrl: "",
-            startTime: "",
-            endTime: "",
-          });
+            linkUrl: '',
+            startTime: '',
+            endTime: ''
+          })
         }
-        this.isPictrueDialog = false;
+        this.isPictrueDialog = false
       }
-
-      // console.log(this.addCntFrom);
     },
     // 获取图片库资源
-    async getPics() {
-      const res = await getChannelsImg();
-      const { code, data } = res.data;
+    async getPics () {
+      const res = await getChannelsImg()
+      const { code, data } = res.data
       if (code === 200) {
-        this.channelTabNum = data.channelList;
+        this.channelTabNum = data.channelList
       }
       this.getImgList(
         this.channelTabNum[0].id,
         this.channelTabNum[0].resourceNum
-      );
+      )
     },
-    async getImgList(id, resNum) {
-      this.fileParmas.channelId = id;
+    async getImgList (id, resNum) {
+      this.fileParmas.channelId = id
       const res = await getPictrueList({
         limit: resNum,
         offset: 1,
-        channelId: id,
-      });
-      const { code, data } = res.data;
+        channelId: id
+      })
+      const { code, data } = res.data
       if (code === 200) {
-        this.pictrueList = data.list;
-        // console.log(this.pictrueList);
+        this.pictrueList = data.list
       }
     },
-    fileSuc(res, file, fileList) {
-      const { code, message } = res;
+    fileSuc (res, file, fileList) {
+      const { code, message } = res
       if (code === 200) {
-        this.$message.success("资源增加成功")
+        this.$message.success('资源增加成功')
         this.fileList = []
-        this.getPics();
+        this.getPics()
       } else {
         this.fileList = []
-        this.$message.error(message);
+        this.$message.error(message)
       }
     },
-    beforeUpload(file) {
-      var testmsg = /^image\/(jpeg|png|jpg|gif|bmp|tiff|dwg)$/.test(file.type);
-      // console.log(file);
-      const isLt2M = file.size / 1024 / 1024 < 2;
+    beforeUpload (file) {
+      var testmsg = /^image\/(jpeg|png|jpg|gif|bmp|tiff|dwg)$/.test(file.type)
+      const isLt2M = file.size / 1024 / 1024 < 2
       if (!testmsg) {
-        this.$message.error("请上传jpeg/png/jpg/gif/bmp/tiff/dwg格式文件!");
+        this.$message.error('请上传jpeg/png/jpg/gif/bmp/tiff/dwg格式文件!')
       }
       if (!isLt2M) {
-        this.$message.error("上传图片大小不能超过 2MB!");
+        this.$message.error('上传图片大小不能超过 2MB!')
       }
-      return testmsg && isLt2M;
+      return testmsg && isLt2M
     },
     // 收集广告信息
-    setAdInfo(id, index) {
+    setAdInfo (id, index) {
       // this.echoList.forEach(item => {
       //   if (item.id == id) {
       //     this.isStatus = true
@@ -988,10 +998,9 @@ export default {
           linkType: this.addCntParmas.linkType, // 跳转类型
           linkUrl: this.addCntParmas.linkUrl, // 跳转地址
           startTime: this.dates[0], // 开始时间
-          endTime: this.dates[1], // 结束时间
-        });
-        this.oldIndex = index;
-        console.log(this.addCntFrom);
+          endTime: this.dates[1] // 结束时间
+        })
+        this.oldIndex = index
       } else {
         this.addCntFrom.splice(index, 1, {
           name: this.addCntParmas.name, // 广告名称
@@ -1000,65 +1009,61 @@ export default {
           linkType: this.addCntParmas.linkType, // 跳转类型
           linkUrl: this.addCntParmas.linkUrl, // 跳转地址
           startTime: this.dates[0], // 开始时间
-          endTime: this.dates[1], // 结束时间
-        });
-        console.log(this.addCntFrom);
+          endTime: this.dates[1] // 结束时间
+        })
       }
       this.dates = [
         this.addCntFrom[index].startTime,
-        this.addCntFrom[index].endTime,
-      ];
-      this.addCntParmas.name = this.addCntFrom[index].name;
-      this.addCntParmas.linkType = this.addCntFrom[index].linkType;
-      this.addCntParmas.linkUrl = this.addCntFrom[index].linkUrl;
+        this.addCntFrom[index].endTime
+      ]
+      this.addCntParmas.name = this.addCntFrom[index].name
+      this.addCntParmas.linkType = this.addCntFrom[index].linkType
+      this.addCntParmas.linkUrl = this.addCntFrom[index].linkUrl
     },
     // 生成广告
-    async createAd() {
+    async createAd () {
       if (this.echoList.length == 1) {
-        this.addCntFrom[0].name = this.addCntParmas.name;
-        this.addCntFrom[0].linkType = this.addCntParmas.linkType;
-        this.addCntFrom[0].linkUrl = this.addCntParmas.linkUrl;
-        this.addCntFrom[0].startTime = this.dates[0];
-        this.addCntFrom[0].endTime = this.dates[1];
-        this.addCntFrom[0].resId = this.echoList[0].id;
-        this.addCntFrom[0].positionId = this.addCntParmas.positionId;
-        // console.log(this.echoList)
+        this.addCntFrom[0].name = this.addCntParmas.name
+        this.addCntFrom[0].linkType = this.addCntParmas.linkType
+        this.addCntFrom[0].linkUrl = this.addCntParmas.linkUrl
+        this.addCntFrom[0].startTime = this.dates[0]
+        this.addCntFrom[0].endTime = this.dates[1]
+        this.addCntFrom[0].resId = this.echoList[0].id
+        this.addCntFrom[0].positionId = this.addCntParmas.positionId
       }
-      this.$confirm("确定生成此条广告吗？", "提示", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning",
+      this.$confirm('确定生成此条广告吗？', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
       })
         .then(async () => {
-          showLoading();
-          const res = await addCnt(this.addCntFrom);
-          console.log(this.addCntFrom);
-          // console.log(res);
-          const { code, message, data } = res.data;
+          showLoading()
+          const res = await addCnt(this.addCntFrom)
+          const { code, message, data } = res.data
           if (code == 200) {
-            hideLoading();
-            this.active = 3;
-            this.detailParmas.positionId = this.addCntParmas.positionId;
-            this.detailParmas.id = data.adsId;
+            hideLoading()
+            this.active = 3
+            this.detailParmas.positionId = this.addCntParmas.positionId
+            this.detailParmas.id = data.adsId
             // this.detailsList = this.addCntFrom;
             this.echoList = [];
-            (this.addCntParmas.name = ""),
-              (this.addCntParmas.positionId = ""),
-              (this.addCntParmas.resId = ""),
-              (this.addCntParmas.linkType = 3),
-              (this.addCntParmas.linkUrl = ""),
-              (this.dates = []);
+            (this.addCntParmas.name = ''),
+            (this.addCntParmas.positionId = ''),
+            (this.addCntParmas.resId = ''),
+            (this.addCntParmas.linkType = 3),
+            (this.addCntParmas.linkUrl = ''),
+            (this.dates = [])
           } else {
-            hideLoading();
-            this.$message.error(message);
+            hideLoading()
+            this.$message.error(message)
           }
         })
         .catch(() => {
           this.$message({
-            type: "info",
-            message: "已取消操作",
-          });
-        });
+            type: 'info',
+            message: '已取消操作'
+          })
+        })
 
       // try {
       //   await this.echoList.forEach(item => {
@@ -1120,65 +1125,63 @@ export default {
       // }
     },
 
-    //查看图片
-    showDialog(src) {
-      this.showBigImg = true;
-      this.bigSrc = src;
+    // 查看图片
+    showDialog (src) {
+      this.showBigImg = true
+      this.bigSrc = src
     },
 
     // 广告详情
-    async showDetail() {
-      this.showDetails = true;
-      const res = await getCntInfo(this.detailParmas);
-      const { code, data, message } = res.data;
+    async showDetail () {
+      this.showDetails = true
+      const res = await getCntInfo(this.detailParmas)
+      const { code, data, message } = res.data
       if (code == 200) {
-        this.detailsList = data;
-        this.detailsListInfo.name = this.detailsList[0].name;
-        this.detailsListInfo.startTime = this.detailsList[0].startTime;
-        this.detailsListInfo.endTime = this.detailsList[0].endTime;
-        this.detailsListInfo.linkUrl = this.detailsList[0].linkUrl;
-        this.detailsListInfo.state = this.detailsList[0].state;
+        this.detailsList = data
+        this.detailsListInfo.name = this.detailsList[0].name
+        this.detailsListInfo.startTime = this.detailsList[0].startTime
+        this.detailsListInfo.endTime = this.detailsList[0].endTime
+        this.detailsListInfo.linkUrl = this.detailsList[0].linkUrl
+        this.detailsListInfo.state = this.detailsList[0].state
       } else {
-        this.$message.error(message);
+        this.$message.error(message)
       }
-      // console.log(this.detailsListInfo);
     },
-    changeDetail(index, oldIndex) {
-      this.detailsListInfo.name = this.detailsList[index].name;
-      this.detailsListInfo.startTime = this.detailsList[index].startTime;
-      this.detailsListInfo.endTime = this.detailsList[index].endTime;
-      this.detailsListInfo.linkUrl = this.detailsList[index].linkUrl;
-      this.detailsListInfo.state = this.detailsList[index].state;
-      //  console.log(this.detailsListInfo.info);
+    changeDetail (index, oldIndex) {
+      this.detailsListInfo.name = this.detailsList[index].name
+      this.detailsListInfo.startTime = this.detailsList[index].startTime
+      this.detailsListInfo.endTime = this.detailsList[index].endTime
+      this.detailsListInfo.linkUrl = this.detailsList[index].linkUrl
+      this.detailsListInfo.state = this.detailsList[index].state
     },
 
     // 弹框取消统一控制
-    closeDialog(num) {
+    closeDialog (num) {
       if (num == 0) {
-        this.isDlag = false;
-        this.oneModules.name = "";
-        this.oneModules.netType = 0;
+        this.isDlag = false
+        this.oneModules.name = ''
+        this.oneModules.netType = 0
       }
       if (num == 1) {
-        this.isModuleDlag = false;
-        this.modules.name = "";
+        this.isModuleDlag = false
+        this.modules.name = ''
       }
       if (num == 2) {
-        this.isCildModuleDlag = false;
-        this.modules.name = "";
+        this.isCildModuleDlag = false
+        this.modules.name = ''
       }
       if (num == 3) {
-        this.isAddModuleCild = false;
-        this.modules.name = "";
-        this.modules.adsType = 0;
-        this.modules.adsNum = 1;
-        this.imgWSize = 800;
-        this.imgHSize = 600;
-        this.fileList = [];
+        this.isAddModuleCild = false
+        this.modules.name = ''
+        this.modules.adsType = 0
+        this.modules.adsNum = 1
+        this.imgWSize = 800
+        this.imgHSize = 600
+        this.fileList = []
       }
       if (num == 4) {
-        this.isPictrueDialog = false;
-        this.checkList = [];
+        this.isPictrueDialog = false
+        this.checkList = []
       }
       if (num == 5) {
         if (this.modules.type == 0) {
@@ -1187,37 +1190,47 @@ export default {
         } else {
           this.isAlterDlag = false
           this.modules.name = ''
-          this.modules.adsType = 0;
-          this.modules.adsNum = 1;
-          this.imgWSize = 800;
-          this.imgHSize = 600;
-          this.fileList = [];
+          this.modules.adsType = 0
+          this.modules.adsNum = 1
+          this.imgWSize = 800
+          this.imgHSize = 600
+          this.fileList = []
         }
       }
     },
     // 添加树节点
-    append(data) {
-      const newChild = { id: id++, label: "testtest", children: [] };
+    append (data) {
+      const newChild = { id: id++, label: 'testtest', children: [] }
       if (!data.children) {
-        this.$set(data, "children", []);
+        this.$set(data, 'children', [])
       }
-      data.children.push(newChild);
+      data.children.push(newChild)
     },
     // 删除树节点
-    remove(node, data) {
-      const parent = node.parent;
-      const children = parent.data.children || parent.data;
-      const index = children.findIndex((d) => d.id === data.id);
-      children.splice(index, 1);
+    remove (node, data) {
+      const parent = node.parent
+      const children = parent.data.children || parent.data
+      const index = children.findIndex((d) => d.id === data.id)
+      children.splice(index, 1)
     },
+    // 图片尺寸展示
+    getImgSize (index) {
+      const img = new Image()
+      img.src = this.pictrueList[index].url
+      // console.log(img);
+      img.onload = () => {
+        this.imgSize = `图片尺寸：${img.width}*${img.height}`
+        // console.log(img.width+'*'+img.height);
+      }
+    }
   },
   watch: {
     filterText: function (val) {
-      this.$refs.tree.filter(val);
-      this.expandAll = true;
-    },
-  },
-};
+      this.$refs.tree.filter(val)
+      this.expandAll = true
+    }
+  }
+}
 </script>
 
 <style lang="scss" scoped>
@@ -1311,6 +1324,7 @@ export default {
         .el-tree-node__content:hover {
           .bianji,
           .add_cild_module {
+            width: 20px;
             opacity: 1;
             transition: 0.1s all;
           }

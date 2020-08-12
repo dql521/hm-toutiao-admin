@@ -30,7 +30,7 @@
         </el-form-item>
         <el-form-item>
           <el-link type="primary" disabled class="go_logon">没有账号去注册
-            <i class="el-icon-rightArrow"></i>
+            <i class="el-icon-right"></i>
           </el-link>
         </el-form-item>
       </el-form>
@@ -41,7 +41,7 @@
 <script>
 // import '../utils/slideBlock.js'
 import { login } from '../api/api'
-import {showLoading, hideLoading} from '@/utils/utils'
+import { showLoading, hideLoading } from '@/utils/utils'
 export default {
   // props: {
   //   msg: String
@@ -54,8 +54,8 @@ export default {
       }
     }
   },
-  created() {
-    let that = this
+  created () {
+    const that = this
     document.onkeydown = e => {
       e = window.event || e
       if (that.$route.path == '/login' && (e.code == 'enter' || e.code == 'Enter')) {
@@ -94,7 +94,7 @@ export default {
         hideLoading()
         this.$message.error('服务异常，请稍后重试！')
       }
-    },
+    }
     // reset () {
     //   this.form.username = ''
     //   this.form.password = ''
@@ -126,7 +126,7 @@ export default {
 // @import "../utils/slideBlock.css";
 
 .login {
-  
+
   height: 100%;
   background: url("../assets/img/bj2.png") no-repeat;
   background-size: 100% 100%;
@@ -187,13 +187,9 @@ export default {
     background: url("../assets/img/Pwd.png") center no-repeat;
     background-size: cover;
 }
-.el-icon-rightArrow{
-    background: url("../assets/img/rightArrow.png") center no-repeat;
-    background-size: cover;
-}
+
 .el-icon-User:before,
-.el-icon-Pwd:before,
-.el-icon-rightArrow:before{
+.el-icon-Pwd:before{
     content: "\66ff";
     font-size: 16px;
     visibility: hidden;
