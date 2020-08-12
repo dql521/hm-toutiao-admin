@@ -3,7 +3,7 @@ const path = require('path')
 const webpack = require('webpack')
 const CompressionWebpackPlugin = require('compression-webpack-plugin')
 const productionGzipExtensions = ['js', 'css']
-console.log(process.env.VUE_APP_HOST);
+console.log(process.env.VUE_APP_HOST)
 module.exports = {
   devServer: {
     hot: true, // 热启动
